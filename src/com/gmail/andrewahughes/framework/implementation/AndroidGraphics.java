@@ -123,6 +123,9 @@ public class AndroidGraphics implements Graphics {
 	public void drawImage(Image Image,int x, int y){
 		canvas.drawBitmap(((AndroidImage)Image).bitmap,x,y,null);
 	}
+	public void drawImageCentred(Image Image,int x, int y){
+		canvas.drawBitmap(((AndroidImage)Image).bitmap,x-(Image.getWidth()/2),y-(Image.getHeight()/2),null);
+	}
 	
 	public void drawScaledImage(Image Image,int x,int y, int width, int height, int srcX,int srcY, int srcWidth, int srcHeight){
 		srcRect.left=srcX;

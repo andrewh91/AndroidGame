@@ -22,6 +22,7 @@ public class GameScreen extends Screen {
     // You would create game objects here.
 
     int livesLeft = 1;
+    int mx=0;
     Paint paint;
 
     public GameScreen(Game game) {
@@ -81,11 +82,11 @@ public class GameScreen extends Screen {
             if (event.type == TouchEvent.TOUCH_DOWN) {
 
                 if (event.x < 640) {
-                    // Move left.
+                    mx=mx-10;
                 }
 
                 else if (event.x > 640) {
-                    // Move right.
+                	mx=mx+10;
                 }
 
             }
@@ -144,14 +145,15 @@ public class GameScreen extends Screen {
 
     @Override
     public void paint(float deltaTime) {
-        Graphics g = game.getGraphics();
-
         // First draw the game elements.
 
         // Example:
         // g.drawImage(Assets.background, 0, 0);
         // g.drawImage(Assets.character, characterX, characterY);
 
+        Graphics g = game.getGraphics();
+		g.drawRect(0, 0, 1280, 800, Color.argb(255, 153, 217, 234));//cornflower blue :)
+		g.drawImageCentred(Assets.menu, mx, 400);
         // Secondly, draw the UI above the game elements.
         if (state == GameState.Ready)
             drawReadyUI();
