@@ -22,9 +22,11 @@ public class GameScreen extends Screen {
     // You would create game objects here.
 
     int livesLeft = 1;
-    int mx=0;
     Paint paint;
-
+    Paint blackText;
+    String pointerPos;
+    int imageX=640,imageY=400;
+    Bullet bullet;
     public GameScreen(Game game) {
         super(game);
 
@@ -36,7 +38,14 @@ public class GameScreen extends Screen {
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setAntiAlias(true);
         paint.setColor(Color.WHITE);
+        
+        blackText=new Paint();
+        blackText.setColor(Color.BLACK);
+        blackText.setTextSize(50);
+        
+        pointerPos = new String();
 
+        bullet = new Bullet();
     }
 
     @Override
@@ -79,14 +88,15 @@ public class GameScreen extends Screen {
         for (int i = 0; i < len; i++) {
             TouchEvent event = touchEvents.get(i);
 
+            pointerPos = "x["+event.x+"], y["+event.y+"], pointer["+event.pointer+"]";
+            imageX=event.x;
+            imageY=event.y;
             if (event.type == TouchEvent.TOUCH_DOWN) {
 
                 if (event.x < 640) {
-                    mx=mx-10;
                 }
 
                 else if (event.x > 640) {
-                	mx=mx+10;
                 }
 
             }
@@ -152,8 +162,13 @@ public class GameScreen extends Screen {
         // g.drawImage(Assets.character, characterX, characterY);
 
         Graphics g = game.getGraphics();
-		g.drawRect(0, 0, 1280, 800, Color.argb(255, 153, 217, 234));//cornflower blue :)
-		g.drawImageCentred(Assets.menu, mx, 400);
+		//g.drawRect(0, 0, 1280, 800, Color.argb(255, 153, 217, 234));//cornflower blue :)
+		g.drawARGB(255, 153, 217, 234);//another way to draw a blue background
+
+        g.drawString(pointerPos,10, 500, blackText);
+
+		g.drawImageCentred(Assets.menu, imageX, imageY);
+		g.drawImageCentred(bullet.getImage(), bullet.getRect().left, bullet.getRect().top);
         // Secondly, draw the UI above the game elements.
         if (state == GameState.Ready)
             drawReadyUI();
