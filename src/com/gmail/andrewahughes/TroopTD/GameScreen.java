@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 
 import com.gmail.andrewahughes.framework.Game;
 import com.gmail.andrewahughes.framework.Graphics;
@@ -25,8 +26,11 @@ public class GameScreen extends Screen {
     Paint paint;
     Paint blackText;
     String pointerPos;
-    int imageX=640,imageY=400;
     Bullet bullet;
+    Command command;
+    boolean commandState = true;
+    int no =0;
+    Rect b;
     public GameScreen(Game game) {
         super(game);
 
@@ -46,6 +50,8 @@ public class GameScreen extends Screen {
         pointerPos = new String();
 
         bullet = new Bullet();
+        command = new Command();
+        b = new Rect(100,100,100,100);
     }
 
     @Override
@@ -81,22 +87,53 @@ public class GameScreen extends Screen {
     private void updateRunning(List<TouchEvent> touchEvents, float deltaTime) {
         
         //This is identical to the update() method from our Unit 2/3 game.
-        
-        
+       /* if(commandState)
+        {
+            if(imageX>destX){
+            	imageX=(float) (imageX-10.0*deltaTime);
+            } 
+            if(imageX<destX){
+            	imageX=imageX+10;
+            }
+            if(imageY>destY){
+            	imageY=imageY-10;
+            }
+            if(imageY<destY){
+            	imageY=imageY+10;
+            }
+        }*/
+    	//for(int i = 0; i<240;i++){
+		
+    	//}
         // 1. All touch input is handled here:
         int len = touchEvents.size();
         for (int i = 0; i < len; i++) {
             TouchEvent event = touchEvents.get(i);
 
-            pointerPos = "x["+event.x+"], y["+event.y+"], pointer["+event.pointer+"]";
-            imageX=event.x;
-            imageY=event.y;
+            pointerPos = "x["+event.x+"], y["+event.y+"], pointer["+event.pointer+"] "+"troop selected? "+command.selected;
+            		
             if (event.type == TouchEvent.TOUCH_DOWN) {
 
-                if (event.x < 640) {
+            command.evaluateTouch(event.x, event.y);
+            	/*if(no<3)
+            	{
+            		command.createTroop(event.x,event.y);
+            		no++;
+            	}
+            	else
+            	{*/
+            	//}
+            	
+            	
+            	//attack
+                if (event.x <200&&event.y>500) 
+                {
+                	command.commandState=true;
+                	
                 }
 
-                else if (event.x > 640) {
+                else if (event.x > 540) {
+                	commandState=true;
                 }
 
             }
@@ -131,8 +168,8 @@ public class GameScreen extends Screen {
         int len = touchEvents.size();
         for (int i = 0; i < len; i++) {
             TouchEvent event = touchEvents.get(i);
-            if (event.type == TouchEvent.TOUCH_UP) {
-
+            if (event.type == TouchEvent.TOUCH_DOWN) {
+            	state=GameState.Running;
             }
         }
     }
@@ -164,11 +201,11 @@ public class GameScreen extends Screen {
         Graphics g = game.getGraphics();
 		//g.drawRect(0, 0, 1280, 800, Color.argb(255, 153, 217, 234));//cornflower blue :)
 		g.drawARGB(255, 153, 217, 234);//another way to draw a blue background
-
-        g.drawString(pointerPos,10, 500, blackText);
-
-		g.drawImageCentred(Assets.menu, imageX, imageY);
-		g.drawImageCentred(bullet.getImage(), bullet.getRect().left, bullet.getRect().top);
+		
+		command.paint(g);
+		g.drawRect(command.troops.get(0).rectangle, Color.argb(100,255,0,0));
+		
+        g.drawString(pointerPos,10, 700, blackText);
         // Secondly, draw the UI above the game elements.
         if (state == GameState.Ready)
             drawReadyUI();
@@ -208,7 +245,8 @@ public class GameScreen extends Screen {
     private void drawPausedUI() {
         Graphics g = game.getGraphics();
         // Darken the entire screen so you can display the Paused screen.
-        g.drawARGB(155, 0, 0, 0);
+        g.drawARGB(100, 0, 0, 0);
+        g.drawString("Tap to resume", 640, 600, paint);
 
     }
 
@@ -222,7 +260,9 @@ public class GameScreen extends Screen {
     @Override
     public void pause() {
         if (state == GameState.Running)
-            state = GameState.Paused;
+        {    
+        	state = GameState.Paused;
+        }
 
     }
 
@@ -239,5 +279,6 @@ public class GameScreen extends Screen {
     @Override
     public void backButton() {
         pause();
+    	
     }
 }

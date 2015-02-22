@@ -12,7 +12,7 @@ public class Bullet {
 	
 	public Bullet()//default position
 	{
-		rectangle=new Rect(100,100,50,50);
+		rectangle=new Rect(100,100,150,150);
 		image=Assets.menu;
 	}
 	public Bullet(Rect r)//specify position and width 
@@ -21,7 +21,7 @@ public class Bullet {
 	}
 	public Bullet(int x, int y)
 	{
-		rectangle=new Rect(x,y,width,height);
+		rectangle=new Rect(x,y,x+image.getWidth(),y+image.getHeight());
 		image=Assets.menu;
 	}
 	public Image getImage()

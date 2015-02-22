@@ -1,6 +1,8 @@
 package com.gmail.andrewahughes.framework;
 
 import android.graphics.Paint;
+import android.graphics.PointF;
+import android.graphics.Rect;
 
 public interface Graphics {
 	public static enum ImageFormat{
@@ -15,9 +17,15 @@ public interface Graphics {
 	
 	public void drawRect(int x, int y, int width, int height, int color);
 	
+	public void drawRect(Rect rectangle, int color);
+	
 	public void drawImage(Image image,int x, int y, int srcX, int srcY, int srcWidth, int srcHeight);
 	
 	public void drawImage(Image image, int x, int y);
+	
+	void drawImage(Image Image, PointF p);
+	
+	public void drawImageCentred(Image image, int i, int j);
 	
 	void drawString(String text, int x, int y, Paint paint);
 	
@@ -27,5 +35,6 @@ public interface Graphics {
 	
 	public void drawARGB(int i, int j,int k, int l);
 
-	public void drawImageCentred(Image image, int i, int j);
+
+
 }

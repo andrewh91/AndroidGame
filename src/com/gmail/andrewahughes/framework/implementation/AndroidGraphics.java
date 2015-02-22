@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory.Options;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.PointF;
 import android.graphics.Rect;
 
 import com.gmail.andrewahughes.framework.Graphics;
@@ -94,7 +95,13 @@ public class AndroidGraphics implements Graphics {
 	public void drawRect(int x,int y, int width, int height, int color){
 		paint.setColor(color);
 		paint.setStyle(Style.FILL);
-		canvas.drawRect(x,y,x+width-1,y+height-1,paint);
+		canvas.drawRect(x,y,width,height,paint);
+	}
+	@Override
+	public void drawRect(Rect rectangle, int color){
+		paint.setColor(color);
+		paint.setStyle(Style.FILL);
+		canvas.drawRect(rectangle,paint);
 	}
 	@Override
 	public void drawARGB(int a, int r, int g, int b ){
@@ -118,10 +125,14 @@ public class AndroidGraphics implements Graphics {
 		
 		canvas.drawBitmap(((AndroidImage) Image).bitmap, srcRect, dstRect,null);
 	}
-	
+
 	@Override
 	public void drawImage(Image Image,int x, int y){
 		canvas.drawBitmap(((AndroidImage)Image).bitmap,x,y,null);
+	}
+	@Override
+	public void drawImage(Image Image,PointF p){
+		canvas.drawBitmap(((AndroidImage)Image).bitmap,p.x,p.y,null);
 	}
 	public void drawImageCentred(Image Image,int x, int y){
 		canvas.drawBitmap(((AndroidImage)Image).bitmap,x-(Image.getWidth()/2),y-(Image.getHeight()/2),null);
