@@ -45,7 +45,7 @@ public class GameScreen extends Screen {
         
         blackText=new Paint();
         blackText.setColor(Color.BLACK);
-        blackText.setTextSize(50);
+        blackText.setTextSize(20);
         
         pointerPos = new String();
 
@@ -103,18 +103,20 @@ public class GameScreen extends Screen {
             }
         }*/
     	//for(int i = 0; i<240;i++){
+    	
+    	command.update(deltaTime);
 		
     	//}
         // 1. All touch input is handled here:
+    	
         int len = touchEvents.size();
         for (int i = 0; i < len; i++) {
             TouchEvent event = touchEvents.get(i);
 
-            pointerPos = "x["+event.x+"], y["+event.y+"], pointer["+event.pointer+"] "+"troop selected? "+command.selected;
+            pointerPos = "x["+event.x+"], y["+event.y+"] \r\n"+"Mode:\r\n select "+command.selected+"\r\nmovement "+command.movementMode+"\r\ncommand "+command.commandState;
             		
             if (event.type == TouchEvent.TOUCH_DOWN) {
 
-            command.evaluateTouch(event.x, event.y);
             	/*if(no<3)
             	{
             		command.createTroop(event.x,event.y);
@@ -123,30 +125,14 @@ public class GameScreen extends Screen {
             	else
             	{*/
             	//}
-            	
-            	
-            	//attack
-                if (event.x <200&&event.y>500) 
-                {
-                	command.commandState=true;
-                	
-                }
 
-                else if (event.x > 540) {
-                	commandState=true;
-                }
 
             }
 
             if (event.type == TouchEvent.TOUCH_UP) {
 
-                if (event.x < 640) {
-                    // Stop moving left.
-                }
-
-                else if (event.x > 640) {
-                    // Stop moving right. }
-                }
+                command.evaluateTouch(event.x, event.y);
+                
             }
 
             
@@ -203,9 +189,8 @@ public class GameScreen extends Screen {
 		g.drawARGB(255, 153, 217, 234);//another way to draw a blue background
 		
 		command.paint(g);
-		g.drawRect(command.troops.get(0).rectangle, Color.argb(100,255,0,0));
 		
-        g.drawString(pointerPos,10, 700, blackText);
+        g.drawString(pointerPos,10, 30, blackText);
         // Secondly, draw the UI above the game elements.
         if (state == GameState.Ready)
             drawReadyUI();
@@ -279,6 +264,6 @@ public class GameScreen extends Screen {
     @Override
     public void backButton() {
         pause();
-    	
+    	command.commandStateToggle();
     }
 }
