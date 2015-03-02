@@ -3,16 +3,20 @@ package com.gmail.andrewahughes.TroopTD;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.gmail.andrewahughes.framework.Graphics;
 import com.gmail.andrewahughes.framework.Image;
 
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.graphics.Rect;
 
 public class Troop {
 
-	List<PointF> destination = new ArrayList<PointF>();
+	List<Destination> destination = new ArrayList<Destination>();
 	PointF position;
 	float speed;
+	double length;
+	PointF direction;
 	Rect rectangle;
 	Image image;
 	int margin=5;
@@ -31,29 +35,74 @@ public class Troop {
 	}
 	public void setDirection(int posX,int posY)
 	{
-		destination.add(new PointF(posX,posY));
+		destination.add(new Destination(posX,posY));//set desstination coordinates
+		direction = new PointF(posX-position.x,posY-position.y);//set the direction vector to head in 
+		length = Math.sqrt((direction.x*direction.x)+(direction.y*direction.y));//find the length of the vector
+
+			direction.x=(float) (direction.x/length);//normalise the direction
+			direction.y=(float) (direction.y/length);
 	}
 	public void moveTo(float dt)
 	{
-		if(position.x<destination.get(0).x)
+		position.x+= direction.x*speed*dt;//increase position by direction
+		position.y+= direction.y*speed*dt;
+		if(direction.x<0)//if the direction is to the left...
 		{
-			position.x+=speed*dt;
+			if(position.x<destination.get(0).pointF.x)//...and we go further left than the destination ...
+			{
+				position.x=destination.get(0).pointF.x;//...then stop!
+				direction.x=0;//set direction x to zero, if y is zero too then destination will be deleted
+			}
 		}
-		else if(position.x>destination.get(0).x)
+		else if(direction.x>0)//if the direction is to the right...
 		{
-			position.x-=speed*dt;
+			if(position.x>destination.get(0).pointF.x)//...and we go further left than it ...
+			{
+				position.x=destination.get(0).pointF.x;//...then stop!
+				direction.x=0;
+			}
 		}
-		if(position.y<destination.get(0).y)
+		if(direction.y<0)
 		{
-			position.y+=speed*dt;
+			if(position.y<destination.get(0).pointF.y)
+			{
+				position.y=destination.get(0).pointF.y;
+				direction.y=0;
+			}
 		}
-		else if(position.y>destination.get(0).y)
+		else if(direction.y>0)
 		{
-			position.y-=speed*dt;
+			if(position.y>destination.get(0).pointF.y)
+			{
+				position.y=destination.get(0).pointF.y;
+				direction.y=0;
+			}
 		}
+
+		if(destination.get(0).rectangle.intersect(rectangle))//if the troop has reached the destination 
+		{
+			destination.remove(0);
+		}
+		updateRect((int)position.x,(int)position.y);
+		
+	}
+	public void updateRect(int x,int y)
+	{
+		rectangle.left = x-margin;
+		rectangle.top = y-margin;
+		rectangle.right = x+image.getWidth()+margin;
+		rectangle.bottom = y+image.getHeight()+margin;
 	}
 	public void removeDirection()
 	{
 		destination.remove(0);
+	}
+
+	public void paint(Graphics graphics)
+	{
+        int len = destination.size();
+        for (int i = 0; i < len; i++) {
+    		graphics.drawRect(destination.get(i).rectangle, Color.argb(100,0,255,0));
+        }
 	}
 }

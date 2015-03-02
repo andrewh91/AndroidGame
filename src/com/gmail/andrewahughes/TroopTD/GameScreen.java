@@ -263,7 +263,7 @@ public class GameScreen extends Screen {
 
     @Override
     public void backButton() {
-        pause();
+        //pause();
     	command.commandStateToggle();
     }
 }

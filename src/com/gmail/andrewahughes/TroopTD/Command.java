@@ -96,7 +96,7 @@ public class Command {//this class will contain all the methods to interact with
 		{
 			commandState=true;
 		}
-		if(commandState==true)
+		else if(commandState==true)
 		{
 			commandState=false;
 		}
@@ -107,6 +107,7 @@ public class Command {//this class will contain all the methods to interact with
         for (int i = 0; i < len; i++) {
         	graphics.drawImage(troops.get(i).image, troops.get(i).position);
     		graphics.drawRect(troops.get(i).rectangle, Color.argb(100,255,0,0));
+    		troops.get(i).paint(graphics);
         }
 	}
 }
