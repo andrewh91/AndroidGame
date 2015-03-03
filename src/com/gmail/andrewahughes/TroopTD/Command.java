@@ -54,7 +54,8 @@ public class Command {//this class will contain all the methods to interact with
 	}
 	public void directTo(int troop,int x,int y)
 	{
-			troops.get(troop).setDirection(x, y);//adds a new destination to the troop
+			//troops.get(troop).setDirection(x, y);//adds a new destination to the troop
+		troops.get(troop).addDestination(x, y);
 		
 	}
 	public void update(float dt)
