@@ -38,6 +38,10 @@ public class Troop {
 		destination.add(new Destination(posX,posY));//set destination coordinates
 		setDirection();  
 	}
+	public void editDestination( int destID, int posX, int posY){
+		destination.get(destID).changeDest(posX, posY);
+		setDirection();
+	}
 	public void setDirection()
 	{
 		if(destination.size()>0){

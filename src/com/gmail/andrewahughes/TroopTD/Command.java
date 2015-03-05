@@ -7,20 +7,31 @@ import java.util.Random;
 import android.graphics.Color;
 import android.graphics.Rect;
 
+import com.gmail.andrewahughes.TroopTD.GameScreen.GameState;
 import com.gmail.andrewahughes.framework.Graphics;
 
 
 public class Command {//this class will contain all the methods to interact with the gameplay, e.g. control troop movement
 
-	boolean commandState,selectMode,movementMode;
+    enum interactionState {
+        select, //select troops or destinations
+        direct,//direct troops
+        edit//edit directions for troops
+    }
+
+    interactionState state = interactionState.select;
+    
+	boolean commandState,selectMode,movementMode,editMode;
 	int destX,destY;
 	List<Troop> troops = new ArrayList<Troop>();
-	int selected=0;//might need an array instead
+	int troopSelected=0;//might need an array instead
+	int destinationSelected=0;
 	public Command()
 	{
-		commandState = true;
-		selectMode = true;
-		movementMode = false;
+		commandState = true;//movement is allowed - not paused
+		selectMode = true;//touch selects troops
+		movementMode = false;//touch directs troops
+		editMode = false;//
 		//make some random troops
 		for(int i = 0; i<20;i++){
 			Random n;
@@ -32,23 +43,35 @@ public class Command {//this class will contain all the methods to interact with
 	public void evaluateTouch(int positionX, int positionY)
 	{
         int len = troops.size();
-        if(selectMode)
+        if(state==interactionState.select)
         {
 			for (int i = 0; i < len; i++) {
-	        	if(troops.get(i).rectangle.contains(positionX, positionY))
-	        	{
-	        		movementMode=true;
-	        		selectMode=false;
-	        		selected =i;
-	        		break;
-	        	}
+				
+		        	if(troops.get(i).rectangle.contains(positionX, positionY))
+		        	{
+		        		state=interactionState.direct;
+		        		troopSelected =i;
+		        		break;
+		        	}
+		        for(int j = 0;j<troops.get(i).destination.size();j++)
+				{
+		        	if(troops.get(i).destination.get(j).rectangle.contains(positionX, positionY))
+		        	{
+		        		destinationSelected=j;
+		        		troopSelected=i;
+		        		state=interactionState.edit;
+		        	}
+				}
 	        }	
         }
-        else if (movementMode)
+        else if (state==interactionState.direct)
         {
-        	directTo(selected,positionX,positionY);
-        	movementMode=false;
-        	selectMode=true;
+        	directTo(troopSelected,positionX,positionY);
+    		state=interactionState.select;
+        }
+        else if(state==interactionState.edit){
+        	troops.get(troopSelected).editDestination(destinationSelected, positionX, positionY);
+    		state=interactionState.select;
         }
        
 	}

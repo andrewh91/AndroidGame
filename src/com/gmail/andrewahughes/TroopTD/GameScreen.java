@@ -113,7 +113,7 @@ public class GameScreen extends Screen {
         for (int i = 0; i < len; i++) {
             TouchEvent event = touchEvents.get(i);
 
-            pointerPos = "x["+event.x+"], y["+event.y+"] \r\n"+"Mode:\r\n select "+command.selected+"\r\nmovement "+command.movementMode+"\r\ncommand "+command.commandState;
+            pointerPos = "x["+event.x+"], y["+event.y+"] \r\n"+"Mode:\r\n select "+command.troopSelected+"\r\nmovement "+command.movementMode+"\r\ncommand "+command.commandState;
             		
             if (event.type == TouchEvent.TOUCH_DOWN) {
 
