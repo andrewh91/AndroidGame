@@ -30,7 +30,7 @@ public class GameScreen extends Screen {
     Command command;
     boolean commandState = true;
     int no =0;
-    Rect b;
+    Rect b,c;
     public GameScreen(Game game) {
         super(game);
 
@@ -52,6 +52,7 @@ public class GameScreen extends Screen {
         bullet = new Bullet();
         command = new Command();
         b = new Rect(100,100,100,100);
+        c = new Rect();
     }
 
     @Override
@@ -117,6 +118,9 @@ public class GameScreen extends Screen {
             		
             if (event.type == TouchEvent.TOUCH_DOWN) {
 
+            	c.left=event.x;
+            	c.top=event.y;
+            	command.startMarquee(event.x,event.y);
             	/*if(no<3)
             	{
             		command.createTroop(event.x,event.y);
@@ -133,6 +137,13 @@ public class GameScreen extends Screen {
 
                 command.evaluateTouch(event.x, event.y);
                 
+            }
+            if(event.type==TouchEvent.TOUCH_DRAGGED)
+            {
+            	//c.left=event.x;
+            	c.right=event.x;
+            	//c.top=event.y;
+            	c.bottom=event.y;
             }
 
             
@@ -225,6 +236,7 @@ public class GameScreen extends Screen {
     private void drawRunningUI() {
         Graphics g = game.getGraphics();
 
+        g.drawRect(c, Color.BLACK);
     }
 
     private void drawPausedUI() {
