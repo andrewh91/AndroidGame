@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Rect;
 
 import com.gmail.andrewahughes.TroopTD.GameScreen.GameState;
@@ -25,7 +26,7 @@ public class Command {// this class will contain all the methods to interact
 	}
 
 	interactionState state = interactionState.select;
-	selectionState selState = selectionState.marquee;
+	selectionState selState = selectionState.tap;
 
 	boolean commandState, selectMode, movementMode, editMode;
 	int destX, destY;
@@ -71,8 +72,7 @@ public class Command {// this class will contain all the methods to interact
 						}
 					}
 				}
-			} 
-			else if (selState == selectionState.marquee) {
+			} else if (selState == selectionState.marquee) {
 				finishMarquee(positionX, positionY);
 				troopSelected.clear();
 				for (int i = 0; i < len; i++) {
@@ -128,6 +128,33 @@ public class Command {// this class will contain all the methods to interact
 		marqueeRect.bottom = y;
 	}
 
+	public void updateMarquee(int x, int y) {
+		if (selState == selectionState.marquee) {
+			marqueeRect.right = x;
+			marqueeRect.bottom = y;
+		}
+	}
+
+	public void toggleSelState() {
+		if (selState == selectionState.marquee) {
+			selState = selectionState.tap;
+		} else if (selState == selectionState.tap) {
+			selState = selectionState.marquee;
+		}
+	}
+
+	public void toggleCameraState() {
+		if (selState == selectionState.marquee) {
+			selState = selectionState.tap;
+		} else if (selState == selectionState.tap) {
+			selState = selectionState.marquee;
+		}
+	}
+
+	public Rect getMarqueeRect() {
+		return marqueeRect;
+	}
+
 	public void createTroop() {
 		troops.add(new Troop());
 	}
@@ -156,13 +183,25 @@ public class Command {// this class will contain all the methods to interact
 		}
 	}
 
-	public void paint(Graphics graphics) {
+	public void drawMarquee(Graphics g,Point cameraDrag) {
+		if (selState == selectionState.marquee) {
+			g.drawRect(getMarqueeRect().left+cameraDrag.x,getMarqueeRect().top+cameraDrag.y,
+					getMarqueeRect().right+cameraDrag.x,getMarqueeRect().bottom+cameraDrag.y, Color.argb(50, 50, 50, 255));
+		}
+	}
+
+	public void paint(Graphics graphics, Point camera) {
 		int len = troops.size();
 		for (int i = 0; i < len; i++) {
-			graphics.drawImage(troops.get(i).image, troops.get(i).position);
-			graphics.drawRect(troops.get(i).rectangle,
-					Color.argb(100, 255, 0, 0));
-			troops.get(i).paint(graphics);
+			graphics.drawImage(troops.get(i).image,
+					(int) troops.get(i).position.x + camera.x,
+					(int) troops.get(i).position.y + camera.y);
+			graphics.drawRect(new Rect(troops.get(i).rectangle.left + camera.x,
+					troops.get(i).rectangle.top + camera.y,
+					troops.get(i).rectangle.right + camera.x,
+					troops.get(i).rectangle.bottom + camera.y), Color.argb(100,
+					255, 0, 0));
+			troops.get(i).paint(graphics, camera);
 		}
 	}
 }

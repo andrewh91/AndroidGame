@@ -7,6 +7,7 @@ import com.gmail.andrewahughes.framework.Graphics;
 import com.gmail.andrewahughes.framework.Image;
 
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 
@@ -38,8 +39,8 @@ public class Troop {
 		destination.add(new Destination(posX,posY));//set destination coordinates
 		setDirection();  
 	}
-	public void editDestination( int destID, int posX, int posY){
-		destination.get(destID).changeDest(posX, posY);
+	public void editDestination( int destID, float positionX, float positionY){
+		destination.get(destID).changeDest(positionX, positionY);
 		setDirection();
 	}
 	public void setDirection()
@@ -110,11 +111,12 @@ public class Troop {
 		destination.remove(0);
 	}
 
-	public void paint(Graphics graphics)
+	public void paint(Graphics graphics,Point camera)
 	{
         int len = destination.size();
         for (int i = 0; i < len; i++) {
-    		graphics.drawRect(destination.get(i).rectangle, Color.argb(100,0,255,0));
+    		graphics.drawRect(new Rect(destination.get(i).rectangle.left+camera.x,destination.get(i).rectangle.top+camera.y,
+    				destination.get(i).rectangle.right+camera.x,destination.get(i).rectangle.bottom+camera.y), Color.argb(100,0,255,0));
         }
 	}
 }

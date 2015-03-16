@@ -4,8 +4,11 @@ import java.util.List;
 
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.PointF;
 import android.graphics.Rect;
 
+import com.gmail.andrewahughes.TroopTD.Command.selectionState;
 import com.gmail.andrewahughes.framework.Game;
 import com.gmail.andrewahughes.framework.Graphics;
 import com.gmail.andrewahughes.framework.Image;
@@ -13,269 +16,304 @@ import com.gmail.andrewahughes.framework.Screen;
 import com.gmail.andrewahughes.framework.Input.TouchEvent;
 
 public class GameScreen extends Screen {
-    enum GameState {
-        Ready, Running, Paused, GameOver
-    }
+	enum GameState {
+		Ready, Running, Paused, GameOver
+	}
 
-    GameState state = GameState.Ready;
+	GameState state = GameState.Ready;
 
-    // Variable Setup
-    // You would create game objects here.
+	// Variable Setup
+	// You would create game objects here.
 
-    int livesLeft = 1;
-    Paint paint;
-    Paint blackText;
-    String pointerPos;
-    Bullet bullet;
-    Command command;
-    boolean commandState = true;
-    int no =0;
-    Rect b,c;
-    public GameScreen(Game game) {
-        super(game);
+	int livesLeft = 1;
+	Paint paint;
+	Paint blackText;
+	String pointerPos;
+	Bullet bullet;
+	Command command;
+	boolean commandState = true;
+	boolean cameraMode = true;
+	int no = 0;
+	Point cameraOrigin;
+	Point cameraDrag;
+	PointF zoomOrigin,zoomDrag,zoomDrag2;
+	float zoomScaleInitial=0,zoomPinchDistanceInitial,zoomPinchDistance,zoomIncrease,zoomScale=0;
+	Button select;
+	Button camera;
 
-        // Initialize game objects here
+	// Rect b,c;
+	public GameScreen(Game game) {
+		super(game);
 
-        // Defining a paint object
-        paint = new Paint();
-        paint.setTextSize(30);
-        paint.setTextAlign(Paint.Align.CENTER);
-        paint.setAntiAlias(true);
-        paint.setColor(Color.WHITE);
-        
-        blackText=new Paint();
-        blackText.setColor(Color.BLACK);
-        blackText.setTextSize(20);
-        
-        pointerPos = new String();
+		// Initialize game objects here
 
-        bullet = new Bullet();
-        command = new Command();
-        b = new Rect(100,100,100,100);
-        c = new Rect();
-    }
+		// Defining a paint object
+		paint = new Paint();
+		paint.setTextSize(30);
+		paint.setTextAlign(Paint.Align.CENTER);
+		paint.setAntiAlias(true);
+		paint.setColor(Color.WHITE);
 
-    @Override
-    public void update(float deltaTime) {
-        List<TouchEvent> touchEvents = game.getInput().getTouchEvents();
+		blackText = new Paint();
+		blackText.setColor(Color.BLACK);
+		blackText.setTextSize(20);
 
-        // We have four separate update methods in this example.
-        // Depending on the state of the game, we call different update methods.
-        // Refer to Unit 3's code. We did a similar thing without separating the
-        // update methods.
+		pointerPos = new String();
 
-        if (state == GameState.Ready)
-            updateReady(touchEvents);
-        if (state == GameState.Running)
-            updateRunning(touchEvents, deltaTime);
-        if (state == GameState.Paused)
-            updatePaused(touchEvents);
-        if (state == GameState.GameOver)
-            updateGameOver(touchEvents);
-    }
+		bullet = new Bullet();
+		command = new Command();
+		cameraOrigin = new Point();
+		cameraDrag = new Point(0, 0);
+		select = new Button(1200, 10, "Select", "Marquee Select", true);
+		camera = new Button(1200, 90, "Camera", "No camera", true);
+		// b = new Rect(100,100,100,100);
+		// c = new Rect();
+	}
 
-    private void updateReady(List<TouchEvent> touchEvents) {
-        
-        // This example starts with a "Ready" screen.
-        // When the user touches the screen, the game begins. 
-        // state now becomes GameState.Running.
-        // Now the updateRunning() method will be called!
-        
-        if (touchEvents.size() > 0)
-            state = GameState.Running;
-    }
+	@Override
+	public void update(float deltaTime) {
+		List<TouchEvent> touchEvents = game.getInput().getTouchEvents();
 
-    private void updateRunning(List<TouchEvent> touchEvents, float deltaTime) {
-        
-        //This is identical to the update() method from our Unit 2/3 game.
-       /* if(commandState)
-        {
-            if(imageX>destX){
-            	imageX=(float) (imageX-10.0*deltaTime);
-            } 
-            if(imageX<destX){
-            	imageX=imageX+10;
-            }
-            if(imageY>destY){
-            	imageY=imageY-10;
-            }
-            if(imageY<destY){
-            	imageY=imageY+10;
-            }
-        }*/
-    	//for(int i = 0; i<240;i++){
-    	
-    	command.update(deltaTime);
-		
-    	//}
-        // 1. All touch input is handled here:
-    	
-        int len = touchEvents.size();
-        for (int i = 0; i < len; i++) {
-            TouchEvent event = touchEvents.get(i);
+		// We have four separate update methods in this example.
+		// Depending on the state of the game, we call different update methods.
+		// Refer to Unit 3's code. We did a similar thing without separating the
+		// update methods.
 
-            pointerPos = "x["+event.x+"], y["+event.y+"] \r\n"+"Mode:\r\n select "+command.troopSelected+"\r\nmovement "+command.movementMode+"\r\ncommand "+command.commandState;
-            		
-            if (event.type == TouchEvent.TOUCH_DOWN) {
+		if (state == GameState.Ready)
+			updateReady(touchEvents);
+		if (state == GameState.Running)
+			updateRunning(touchEvents, deltaTime);
+		if (state == GameState.Paused)
+			updatePaused(touchEvents);
+		if (state == GameState.GameOver)
+			updateGameOver(touchEvents);
+	}
 
-            	c.left=event.x;
-            	c.top=event.y;
-            	command.startMarquee(event.x,event.y);
-            	/*if(no<3)
-            	{
-            		command.createTroop(event.x,event.y);
-            		no++;
-            	}
-            	else
-            	{*/
-            	//}
+	private void updateReady(List<TouchEvent> touchEvents) {
 
+		// This example starts with a "Ready" screen.
+		// When the user touches the screen, the game begins.
+		// state now becomes GameState.Running.
+		// Now the updateRunning() method will be called!
 
-            }
+		if (touchEvents.size() > 0)
+			state = GameState.Running;
+	}
 
-            if (event.type == TouchEvent.TOUCH_UP) {
+	private void updateRunning(List<TouchEvent> touchEvents, float deltaTime) {
 
-                command.evaluateTouch(event.x, event.y);
-                
-            }
-            if(event.type==TouchEvent.TOUCH_DRAGGED)
-            {
-            	//c.left=event.x;
-            	c.right=event.x;
-            	//c.top=event.y;
-            	c.bottom=event.y;
-            }
+		command.update(deltaTime);
+		int len = touchEvents.size();
+		for (int i = 0; i < len; i++) {
+			TouchEvent event = touchEvents.get(i);
+			TouchEvent event1 = touchEvents.get(i+1);
+			pointerPos = "touch "+event.x+","+event.y+"zoomOrigin "+zoomOrigin+"zoomDrag"+zoomDrag+"zoomScale"+zoomScale+"distinit"+zoomPinchDistanceInitial+"dist"+zoomPinchDistance;
 
-            
-        }
-        
-        // 2. Check miscellaneous events like death:
-        
-        if (livesLeft == 0) {
-            state = GameState.GameOver;
-        }
-        
-        
-        // 3. Call individual update() methods here.
-        // This is where all the game updates happen.
-        // For example, robot.update();
-    }
+			if (event.type == TouchEvent.TOUCH_DOWN) {
+				// button logic
+				// if we touch a button do nothing, but if touch up event is
+				// also on button then press button
+				if (select.rectangle.contains(event.x, event.y)) {
 
-    private void updatePaused(List<TouchEvent> touchEvents) {
-        int len = touchEvents.size();
-        for (int i = 0; i < len; i++) {
-            TouchEvent event = touchEvents.get(i);
-            if (event.type == TouchEvent.TOUCH_DOWN) {
-            	state=GameState.Running;
-            }
-        }
-    }
+				} else if (camera.rectangle.contains(event.x, event.y)) {
 
-    private void updateGameOver(List<TouchEvent> touchEvents) {
-        int len = touchEvents.size();
-        for (int i = 0; i < len; i++) {
-            TouchEvent event = touchEvents.get(i);
-            if (event.type == TouchEvent.TOUCH_UP) {
-                if (event.x > 300 && event.x < 980 && event.y > 100
-                        && event.y < 500) {
-                    nullify();
-                    game.setScreen(new MainMenuScreen(game));
-                    return;
-                }
-            }
-        }
+				} else {// if no button is pressed
+						// c.left=event.x;
+						// c.top=event.y;
+					command.startMarquee(event.x - cameraDrag.x, event.y
+							- cameraDrag.y);
+					/*
+					 * if(no<3) { command.createTroop(event.x,event.y); no++; }
+					 * else {
+					 */
+					// }
 
-    }
+				}
+				if (cameraMode) {
+					cameraOrigin = new Point(event.x - cameraDrag.x, event.y
+							- cameraDrag.y);
+						zoomOrigin = new PointF(event.x, event.y);
+					if(event.pointer>1)
+					{
+						zoomPinchDistanceInitial = (float) Math.sqrt(((zoomOrigin.x-event.x)*(zoomOrigin.x-event.x))+((zoomOrigin.y-event.y)*(zoomOrigin.y-event.y)));//find the length of the vector
+					}
+					
+				}
+			}
 
-    @Override
-    public void paint(float deltaTime) {
-        // First draw the game elements.
+			if (event.type == TouchEvent.TOUCH_UP) {
 
-        // Example:
-        // g.drawImage(Assets.background, 0, 0);
-        // g.drawImage(Assets.character, characterX, characterY);
+				// button logic
+				// if we touch a button do nothing, but if touch up event is
+				// also on button then press button
+				if (select.rectangle.contains(event.x, event.y)) {
+					select.toggle();
+					command.toggleSelState();
+				} else if (camera.rectangle.contains(event.x, event.y)) {
+					camera.toggle();
+					if (cameraMode) {
+						cameraMode = false;
+					} else if (cameraMode == false) {
+						cameraMode = true;
+					}
+				} else {
+					command.evaluateTouch(event.x - cameraDrag.x, event.y
+							- cameraDrag.y);
+				}
+				zoomScaleInitial=zoomScale;
 
-        Graphics g = game.getGraphics();
-		//g.drawRect(0, 0, 1280, 800, Color.argb(255, 153, 217, 234));//cornflower blue :)
-		g.drawARGB(255, 153, 217, 234);//another way to draw a blue background
-		
-		command.paint(g);
-		
-        g.drawString(pointerPos,10, 30, blackText);
-        // Secondly, draw the UI above the game elements.
-        if (state == GameState.Ready)
-            drawReadyUI();
-        if (state == GameState.Running)
-            drawRunningUI();
-        if (state == GameState.Paused)
-            drawPausedUI();
-        if (state == GameState.GameOver)
-            drawGameOverUI();
+			}
+			if (event.type == TouchEvent.TOUCH_DRAGGED) {
+				// c.left=event.x;
+				// c.right=event.x;
+				// c.top=event.y;
+				// c.bottom=event.y;
+				if (cameraMode) {
+					cameraDrag = new Point(event.x - cameraOrigin.x, event.y
+							- cameraOrigin.y);
+					zoomPinchDistance=(float) Math.sqrt(((zoomOrigin.x-event.x)*(zoomOrigin.x-event.x))+((zoomOrigin.y-event.y)*(zoomOrigin.y-event.y)));//find the length of the vector
+					if(zoomPinchDistanceInitial!=0)
+					{
+						zoomIncrease=zoomPinchDistance/zoomPinchDistanceInitial;			
+						zoomScale = zoomScaleInitial + zoomIncrease;
+					}
+				} else {
 
-    }
+					command.updateMarquee(event.x - cameraDrag.x, event.y
+							- cameraDrag.y);
+				}
+			}
 
-    private void nullify() {
+		}
 
-        // Set all variables to null. You will be recreating them in the
-        // constructor.
-        paint = null;
+		// 2. Check miscellaneous events like death:
 
-        // Call garbage collector to clean up memory.
-        System.gc();
-    }
+		if (livesLeft == 0) {
+			state = GameState.GameOver;
+		}
 
-    private void drawReadyUI() {
-        Graphics g = game.getGraphics();
+		// 3. Call individual update() methods here.
+		// This is where all the game updates happen.
+		// For example, robot.update();
+	}
 
-        g.drawARGB(155, 0, 0, 0);
-        g.drawString("Tap each side of the screen to move in that direction.",
-                640, 300, paint);
+	private void updatePaused(List<TouchEvent> touchEvents) {
+		int len = touchEvents.size();
+		for (int i = 0; i < len; i++) {
+			TouchEvent event = touchEvents.get(i);
+			if (event.type == TouchEvent.TOUCH_DOWN) {
+				state = GameState.Running;
+			}
+		}
+	}
 
-    }
+	private void updateGameOver(List<TouchEvent> touchEvents) {
+		int len = touchEvents.size();
+		for (int i = 0; i < len; i++) {
+			TouchEvent event = touchEvents.get(i);
+			if (event.type == TouchEvent.TOUCH_UP) {
+				if (event.x > 300 && event.x < 980 && event.y > 100
+						&& event.y < 500) {
+					nullify();
+					game.setScreen(new MainMenuScreen(game));
+					return;
+				}
+			}
+		}
 
-    private void drawRunningUI() {
-        Graphics g = game.getGraphics();
+	}
 
-        g.drawRect(c, Color.BLACK);
-    }
+	@Override
+	public void paint(float deltaTime) {
+		// First draw the game elements.
 
-    private void drawPausedUI() {
-        Graphics g = game.getGraphics();
-        // Darken the entire screen so you can display the Paused screen.
-        g.drawARGB(100, 0, 0, 0);
-        g.drawString("Tap to resume", 640, 600, paint);
+		// Example:
+		// g.drawImage(Assets.background, 0, 0);
+		// g.drawImage(Assets.character, characterX, characterY);
 
-    }
+		Graphics g = game.getGraphics();
+		// g.drawRect(0, 0, 1280, 800, Color.argb(255, 153, 217,
+		// 234));//cornflower blue :)
+		g.drawARGB(255, 153, 217, 234);// another way to draw a blue background
 
-    private void drawGameOverUI() {
-        Graphics g = game.getGraphics();
-        g.drawRect(0, 0, 1281, 801, Color.BLACK);
-        g.drawString("GAME OVER.", 640, 300, paint);
+		command.paint(g, cameraDrag);
 
-    }
+		g.drawString(pointerPos, 10, 30, blackText);
+		// Secondly, draw the UI above the game elements.
+		if (state == GameState.Ready)
+			drawReadyUI();
+		if (state == GameState.Running)
+			drawRunningUI();
+		if (state == GameState.Paused)
+			drawPausedUI();
+		if (state == GameState.GameOver)
+			drawGameOverUI();
 
-    @Override
-    public void pause() {
-        if (state == GameState.Running)
-        {    
-        	state = GameState.Paused;
-        }
+	}
 
-    }
+	private void nullify() {
 
-    @Override
-    public void resume() {
+		// Set all variables to null. You will be recreating them in the
+		// constructor.
+		paint = null;
 
-    }
+		// Call garbage collector to clean up memory.
+		System.gc();
+	}
 
-    @Override
-    public void dispose() {
+	private void drawReadyUI() {
+		Graphics g = game.getGraphics();
 
-    }
+		g.drawARGB(155, 0, 0, 0);
+		g.drawString("Tap each side of the screen to move in that direction.",
+				640, 300, paint);
 
-    @Override
-    public void backButton() {
-        //pause();
-    	command.commandStateToggle();
-    }
+	}
+
+	private void drawRunningUI() {
+		Graphics g = game.getGraphics();
+
+		command.drawMarquee(g,cameraDrag);
+		select.paint(g, paint);
+		camera.paint(g, paint);
+	}
+
+	private void drawPausedUI() {
+		Graphics g = game.getGraphics();
+		// Darken the entire screen so you can display the Paused screen.
+		g.drawARGB(100, 0, 0, 0);
+		g.drawString("Tap to resume", 640, 600, paint);
+
+	}
+
+	private void drawGameOverUI() {
+		Graphics g = game.getGraphics();
+		g.drawRect(0, 0, 1281, 801, Color.BLACK);
+		g.drawString("GAME OVER.", 640, 300, paint);
+
+	}
+
+	@Override
+	public void pause() {
+		if (state == GameState.Running) {
+			state = GameState.Paused;
+		}
+
+	}
+
+	@Override
+	public void resume() {
+
+	}
+
+	@Override
+	public void dispose() {
+
+	}
+
+	@Override
+	public void backButton() {
+		// pause();
+		command.commandStateToggle();
+	}
 }
