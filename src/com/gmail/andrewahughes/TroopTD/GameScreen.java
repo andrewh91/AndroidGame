@@ -36,10 +36,11 @@ public class GameScreen extends Screen {
 	int no = 0;
 	Point cameraOrigin;
 	Point cameraDrag;
-	PointF zoomOrigin,zoomDrag,zoomDrag2;
-	float zoomScaleInitial=0,zoomPinchDistanceInitial,zoomPinchDistance,zoomIncrease,zoomScale=0;
-	Button select;
-	Button camera;
+	PointF zoomOrigin, zoomDrag, zoomDrag2, finger1, finger2;
+	float zoomScaleInitial = 1, zoomPinchDistanceInitial, zoomPinchDistance,
+			zoomIncrease=1, zoomScale = 1;
+	Button selectBtn;
+	Button cameraBtn;
 
 	// Rect b,c;
 	public GameScreen(Game game) {
@@ -64,8 +65,10 @@ public class GameScreen extends Screen {
 		command = new Command();
 		cameraOrigin = new Point();
 		cameraDrag = new Point(0, 0);
-		select = new Button(1200, 10, "Select", "Marquee Select", true);
-		camera = new Button(1200, 90, "Camera", "No camera", true);
+		finger1 = new PointF(0, 0);
+		finger2 = new PointF(0, 0);
+		selectBtn = new Button(1200, 10, "Select", "Marquee Select", true);
+		cameraBtn = new Button(1200, 90, "Camera", "No camera", true);
 		// b = new Rect(100,100,100,100);
 		// c = new Rect();
 	}
@@ -106,16 +109,16 @@ public class GameScreen extends Screen {
 		int len = touchEvents.size();
 		for (int i = 0; i < len; i++) {
 			TouchEvent event = touchEvents.get(i);
-			TouchEvent event1 = touchEvents.get(i+1);
-			pointerPos = "touch "+event.x+","+event.y+"zoomOrigin "+zoomOrigin+"zoomDrag"+zoomDrag+"zoomScale"+zoomScale+"distinit"+zoomPinchDistanceInitial+"dist"+zoomPinchDistance;
+			//pointerPos = "touch "+event.x+","+event.y+"zoomOrigin "+zoomOrigin+"zoomDrag"+zoomDrag+"zoomScale"+zoomScale+"distinit"+zoomPinchDistanceInitial+"dist"+zoomPinchDistance;
 
+			pointerPos = "f1 "+finger1+"f2 "+finger2+"pointer "+event.pointer+"type "+event.type+"initial dist "+zoomPinchDistanceInitial+"dist "+zoomPinchDistance+"scale "+zoomScale+"increase "+zoomIncrease;
 			if (event.type == TouchEvent.TOUCH_DOWN) {
 				// button logic
 				// if we touch a button do nothing, but if touch up event is
 				// also on button then press button
-				if (select.rectangle.contains(event.x, event.y)) {
+				if (selectBtn.rectangle.contains(event.x, event.y)) {
 
-				} else if (camera.rectangle.contains(event.x, event.y)) {
+				} else if (cameraBtn.rectangle.contains(event.x, event.y)) {
 
 				} else {// if no button is pressed
 						// c.left=event.x;
@@ -133,9 +136,18 @@ public class GameScreen extends Screen {
 					cameraOrigin = new Point(event.x - cameraDrag.x, event.y
 							- cameraDrag.y);
 						zoomOrigin = new PointF(event.x, event.y);
-					if(event.pointer>1)
+					if(event.pointer==0)
+						{
+							finger1=new PointF(event.x,event.y);
+						}
+					if(event.pointer==1)
 					{
-						zoomPinchDistanceInitial = (float) Math.sqrt(((zoomOrigin.x-event.x)*(zoomOrigin.x-event.x))+((zoomOrigin.y-event.y)*(zoomOrigin.y-event.y)));//find the length of the vector
+						finger2=new PointF(event.x,event.y);
+					}
+					if(event.pointer>0)
+					{
+						
+						zoomPinchDistanceInitial = (float) Math.sqrt(((finger1.x-finger2.x)*(finger1.x-finger2.x))+((finger1.y-finger2.y)*(finger1.y-finger2.y)));//find the length of the vector
 					}
 					
 				}
@@ -146,11 +158,11 @@ public class GameScreen extends Screen {
 				// button logic
 				// if we touch a button do nothing, but if touch up event is
 				// also on button then press button
-				if (select.rectangle.contains(event.x, event.y)) {
-					select.toggle();
+				if (selectBtn.rectangle.contains(event.x, event.y)) {
+					selectBtn.toggle();
 					command.toggleSelState();
-				} else if (camera.rectangle.contains(event.x, event.y)) {
-					camera.toggle();
+				} else if (cameraBtn.rectangle.contains(event.x, event.y)) {
+					cameraBtn.toggle();
 					if (cameraMode) {
 						cameraMode = false;
 					} else if (cameraMode == false) {
@@ -169,14 +181,25 @@ public class GameScreen extends Screen {
 				// c.top=event.y;
 				// c.bottom=event.y;
 				if (cameraMode) {
+					if(event.pointer==0)
+					{
+						finger1 = new PointF(event.x,event.y);
+					}
+					if(event.pointer==1)
+					{
+						finger2 = new PointF(event.x,event.y);
+						zoomPinchDistance = (float) Math.sqrt(((finger1.x-finger2.x)*(finger1.x-finger2.x))+((finger1.y-finger2.y)*(finger1.y-finger2.y)));//find the length of the vector
+						if(zoomPinchDistanceInitial!=0)
+						{
+							zoomIncrease=zoomScaleInitial*(zoomPinchDistance/zoomPinchDistanceInitial);			
+							zoomScale = zoomIncrease;
+						}
+					}
+					
 					cameraDrag = new Point(event.x - cameraOrigin.x, event.y
 							- cameraOrigin.y);
-					zoomPinchDistance=(float) Math.sqrt(((zoomOrigin.x-event.x)*(zoomOrigin.x-event.x))+((zoomOrigin.y-event.y)*(zoomOrigin.y-event.y)));//find the length of the vector
-					if(zoomPinchDistanceInitial!=0)
-					{
-						zoomIncrease=zoomPinchDistance/zoomPinchDistanceInitial;			
-						zoomScale = zoomScaleInitial + zoomIncrease;
-					}
+					//zoomPinchDistance=(float) Math.sqrt(((zoomOrigin.x-event.x)*(zoomOrigin.x-event.x))+((zoomOrigin.y-event.y)*(zoomOrigin.y-event.y)));//find the length of the vector
+
 				} else {
 
 					command.updateMarquee(event.x - cameraDrag.x, event.y
@@ -273,9 +296,9 @@ public class GameScreen extends Screen {
 	private void drawRunningUI() {
 		Graphics g = game.getGraphics();
 
-		command.drawMarquee(g,cameraDrag);
-		select.paint(g, paint);
-		camera.paint(g, paint);
+		command.drawMarquee(g, cameraDrag);
+		selectBtn.paint(g, paint);
+		cameraBtn.paint(g, paint);
 	}
 
 	private void drawPausedUI() {
