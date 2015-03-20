@@ -6,6 +6,7 @@ import java.util.Random;
 
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.PointF;
 import android.graphics.Rect;
 
 import com.gmail.andrewahughes.TroopTD.GameScreen.GameState;
@@ -85,6 +86,7 @@ public class Command {// this class will contain all the methods to interact
 		}
 
 		else if (state == interactionState.direct) {
+			finishMarquee(positionX, positionY);
 			directTo(troopSelected, positionX, positionY);
 			state = interactionState.select;
 		} else if (state == interactionState.edit) {
@@ -100,8 +102,24 @@ public class Command {// this class will contain all the methods to interact
 	public void directTo(List<Integer> troop, int x, int y) {
 		// troops.get(troop).setDirection(x, y);//adds a new destination to the
 		// troop
-		for (int i = 0; i < troop.size(); i++) {
-			troops.get(troop.get(i)).addDestination(x, y);
+		//for (int i = 0; i < troop.size(); i++) {
+		//	troops.get(troop.get(i)).addDestination(x, y);
+		//}
+		int noOfTroops = troop.size();
+		int width = marqueeRect.right-marqueeRect.left;
+		int height = marqueeRect.bottom-marqueeRect.top;
+		double distBetweenTroops = Math.sqrt((width*height)/Math.sqrt(noOfTroops));
+		int columns = (int) Math.ceil( (width/distBetweenTroops));
+		int rows =(int) Math.ceil(height/distBetweenTroops);
+		int k = 0;
+		for(int i = 0; i<columns;i++)
+		{
+			for(int j = 0; j < rows;j++)
+			{
+				troops.get(troop.get(k)).addDestination(marqueeRect.left+(int)(distBetweenTroops*i),marqueeRect.top+(int)(distBetweenTroops*j));
+				k++;
+			}
+			k++;
 		}
 
 	}
