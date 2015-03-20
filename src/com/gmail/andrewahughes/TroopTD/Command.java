@@ -124,8 +124,24 @@ public class Command {// this class will contain all the methods to interact
 	}
 
 	public void finishMarquee(int x, int y) {
-		marqueeRect.right = x;
-		marqueeRect.bottom = y;
+		if(x>marqueeRect.left)
+		{
+			marqueeRect.right = x;
+		}
+		else
+		{
+			marqueeRect.right=marqueeRect.left;
+			marqueeRect.left=x;
+		}
+		if(y>marqueeRect.top)
+		{
+			marqueeRect.bottom = y;
+		}
+		else
+		{
+			marqueeRect.bottom=marqueeRect.top;
+			marqueeRect.top=y;
+		}
 	}
 
 	public void updateMarquee(int x, int y) {
