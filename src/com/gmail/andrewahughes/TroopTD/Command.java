@@ -107,22 +107,49 @@ public class Command {// this class will contain all the methods to interact
 		//}
 		int noOfTroops = troop.size();
 		int width = marqueeRect.right-marqueeRect.left;
+		if(width==0)
+		{
+			width=1;
+		}
 		int height = marqueeRect.bottom-marqueeRect.top;
-		double distBetweenTroops = Math.sqrt((width*height)/Math.sqrt(noOfTroops));
-		int columns = (int) Math.ceil( (width/distBetweenTroops));
-		int rows =(int) Math.ceil(height/distBetweenTroops);
+		if(height==0)
+		{
+			height=1;
+		}
+		double distBetweenTroops = Math.sqrt((width*height))/Math.sqrt(noOfTroops);
+		int columns = (int) Math.floor( (width/distBetweenTroops));
+		int rows =(int) Math.floor(height/distBetweenTroops);
+		int difference = noOfTroops-(rows*columns);
+		if(difference>0)
+		{
+			if(Math.ceil((double)difference/(double)rows)*rows<Math.ceil((double)difference/(double)columns)*columns)
+			{
+				columns=(int) (columns+Math.ceil((double)difference/(double)rows));
+			}
+			else
+			{
+				rows=(int)(rows+Math.ceil((double)difference/(double)rows));
+			}
+		}
+		
 		int k = 0;
 		for(int i = 0; i<columns;i++)
 		{
 			for(int j = 0; j < rows;j++)
 			{
-				troops.get(troop.get(k)).addDestination(marqueeRect.left+(int)(distBetweenTroops*i),marqueeRect.top+(int)(distBetweenTroops*j));
-				k++;
+				troops.get(troop.get(k)).addDestination(marqueeRect.left+(int)((float)width*((float)i/(float)columns)),marqueeRect.top+(int)((float)height*((float)j/(float)rows)));
+				if(k<noOfTroops-1)
+				{
+					k++;
+				}
+				else
+				{
+					break;
+				}
 			}
-			k++;
 		}
-
 	}
+		
 
 	public void update(float dt) {
 
