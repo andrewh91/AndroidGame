@@ -128,7 +128,7 @@ public class Command {// this class will contain all the methods to interact
 			}
 			else
 			{
-				rows=(int)(rows+Math.ceil((double)difference/(double)rows));
+				rows=(int)(rows+Math.ceil((double)difference/(double)columns));
 			}
 		}
 		
@@ -137,9 +137,10 @@ public class Command {// this class will contain all the methods to interact
 		{
 			for(int j = 0; j < rows;j++)
 			{
-				troops.get(troop.get(k)).addDestination(marqueeRect.left+(int)((float)width*((float)i/(float)columns)),marqueeRect.top+(int)((float)height*((float)j/(float)rows)));
-				if(k<noOfTroops-1)
+				
+				if(k<noOfTroops)
 				{
+					troops.get(troop.get(k)).addDestination(marqueeRect.left+(int)((float)width*((float)i/(float)(columns-1))),marqueeRect.top+(int)((float)height*((float)j/(float)(rows-1))));
 					k++;
 				}
 				else
