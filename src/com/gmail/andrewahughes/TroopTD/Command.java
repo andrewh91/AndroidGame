@@ -54,7 +54,17 @@ public class Command {// this class will contain all the methods to interact
 	public void evaluateTouch(int positionX, int positionY) {
 		int len = troops.size();
 		if (state == interactionState.select) {
-			if (selState == selectionState.tap) {
+			 if (selState == selectionState.marquee&&getMarqueeSize(positionX, positionY)>25) {   //if in marquee select mode and we draw a big enough rect
+				finishMarquee(positionX, positionY);
+				troopSelected.clear();
+				for (int i = 0; i < len; i++) {
+					if (marqueeRect.contains(troops.get(i).rectangle)) {
+						state = interactionState.direct;
+						troopSelected.add(i);
+					}
+				}
+			}
+			 else if (selState == selectionState.tap||getMarqueeSize(positionX, positionY)<=25) {
 				for (int i = 0; i < len; i++) {
 
 					if (troops.get(i).rectangle.contains(positionX, positionY)) {
@@ -73,16 +83,7 @@ public class Command {// this class will contain all the methods to interact
 						}
 					}
 				}
-			} else if (selState == selectionState.marquee) {
-				finishMarquee(positionX, positionY);
-				troopSelected.clear();
-				for (int i = 0; i < len; i++) {
-					if (marqueeRect.contains(troops.get(i).rectangle)) {
-						state = interactionState.direct;
-						troopSelected.add(i);
-					}
-				}
-			}
+			} 
 		}
 
 		else if (state == interactionState.direct) {
@@ -118,7 +119,16 @@ public class Command {// this class will contain all the methods to interact
 		}
 		double distBetweenTroops = Math.sqrt((width*height))/Math.sqrt(noOfTroops);
 		int columns = (int) Math.floor( (width/distBetweenTroops));
+		if(columns<1)
+		{
+			columns=1;
+		}
 		int rows =(int) Math.floor(height/distBetweenTroops);
+		
+		if(rows<1)
+		{
+			rows=1;
+		}
 		int difference = noOfTroops-(rows*columns);
 		if(difference>0)
 		{
@@ -131,8 +141,20 @@ public class Command {// this class will contain all the methods to interact
 				rows=(int)(rows+Math.ceil((double)difference/(double)columns));
 			}
 		}
+		else
+		{
+			if(columns==1)
+			{
+				rows=rows+difference;
+			}
+			if(rows==1)
+			{
+				columns=columns+difference;
+			}
+		}
 		
 		int k = 0;
+		
 		for(int i = 0; i<columns;i++)
 		{
 			for(int j = 0; j < rows;j++)
@@ -140,7 +162,24 @@ public class Command {// this class will contain all the methods to interact
 				
 				if(k<noOfTroops)
 				{
-					troops.get(troop.get(k)).addDestination(marqueeRect.left+(int)((float)width*((float)i/(float)(columns-1))),marqueeRect.top+(int)((float)height*((float)j/(float)(rows-1))));
+					if(columns<=1&&rows<=1||noOfTroops<=1)
+					{
+						troops.get(troop.get(k)).addDestination(marqueeRect.left+(int)((float)width/2),marqueeRect.top+(int)((float)height/2));
+					}
+					else if(columns<=1)
+					{
+						troops.get(troop.get(k)).addDestination(marqueeRect.left+(int)((float)width/2),marqueeRect.top+(int)((float)height*((float)j/(float)(rows-1))));
+
+					}
+					else if(rows<=1)
+					{
+						troops.get(troop.get(k)).addDestination(marqueeRect.left+(int)((float)width*((float)i/(float)(columns-1))),marqueeRect.top+(int)((float)height/2));
+
+					}
+					else if(columns>1&&rows>1)
+					{
+						troops.get(troop.get(k)).addDestination(marqueeRect.left+(int)((float)width*((float)i/(float)(columns-1))),marqueeRect.top+(int)((float)height*((float)j/(float)(rows-1))));
+					}
 					k++;
 				}
 				else
@@ -169,6 +208,21 @@ public class Command {// this class will contain all the methods to interact
 		marqueeRect.top = y;
 	}
 
+	public int getMarqueeSize(int x,int y)
+	{
+		int largestSize,width,height; 
+		width = marqueeRect.left-x;
+		if(width<0)
+			width=width*-1;
+		height = marqueeRect.top-y;
+		if(height<0)
+			height=height*-1;
+		if(width>height)
+			largestSize=width;
+		else
+			largestSize=height;
+		return largestSize;
+	}
 	public void finishMarquee(int x, int y) {
 		if(x>marqueeRect.left)
 		{

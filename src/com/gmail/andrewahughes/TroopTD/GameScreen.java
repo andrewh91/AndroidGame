@@ -111,7 +111,7 @@ public class GameScreen extends Screen {
 			TouchEvent event = touchEvents.get(i);
 			//pointerPos = "touch "+event.x+","+event.y+"zoomOrigin "+zoomOrigin+"zoomDrag"+zoomDrag+"zoomScale"+zoomScale+"distinit"+zoomPinchDistanceInitial+"dist"+zoomPinchDistance;
 
-			pointerPos = "f1 "+finger1+"f2 "+finger2+"pointer "+event.pointer+"type "+event.type+"initial dist "+zoomPinchDistanceInitial+"dist "+zoomPinchDistance+"scale "+zoomScale+"increase "+zoomIncrease;
+			//pointerPos = "f1 "+finger1+"f2 "+finger2+"pointer "+event.pointer+"type "+event.type+"initial dist "+zoomPinchDistanceInitial+"dist "+zoomPinchDistance+"scale "+zoomScale+"increase "+zoomIncrease;
 			
 			if (event.type == TouchEvent.TOUCH_DOWN) {
 				// button logic
@@ -133,25 +133,8 @@ public class GameScreen extends Screen {
 					// }
 
 				}
-				if (cameraMode) {
-					cameraOrigin = new Point(event.x - cameraDrag.x, event.y
-							- cameraDrag.y);
-						zoomOrigin = new PointF(event.x, event.y);
-					if(event.pointer==0)
-						{
-							finger1=new PointF(event.x,event.y);
-						}
-					if(event.pointer==1)
-					{
-						finger2=new PointF(event.x,event.y);
-					}
-					if(event.pointer>0)
-					{
-						
-						zoomPinchDistanceInitial = (float) Math.sqrt(((finger1.x-finger2.x)*(finger1.x-finger2.x))+((finger1.y-finger2.y)*(finger1.y-finger2.y)));//find the length of the vector
-					}
-					
-				}
+				if (cameraMode) 
+					cameraControlInitiate(event);
 			}
 
 			if (event.type == TouchEvent.TOUCH_UP) {
@@ -182,25 +165,7 @@ public class GameScreen extends Screen {
 				// c.top=event.y;
 				// c.bottom=event.y;
 				if (cameraMode) {
-					if(event.pointer==0)
-					{
-						finger1 = new PointF(event.x,event.y);
-					}
-					if(event.pointer==1)
-					{
-						finger2 = new PointF(event.x,event.y);
-						zoomPinchDistance = (float) Math.sqrt(((finger1.x-finger2.x)*(finger1.x-finger2.x))+((finger1.y-finger2.y)*(finger1.y-finger2.y)));//find the length of the vector
-						if(zoomPinchDistanceInitial!=0)
-						{
-							zoomIncrease=zoomScaleInitial*(zoomPinchDistance/zoomPinchDistanceInitial);			
-							zoomScale = zoomIncrease;
-						}
-					}
-					
-					cameraDrag = new Point(event.x - cameraOrigin.x, event.y
-							- cameraOrigin.y);
-					//zoomPinchDistance=(float) Math.sqrt(((zoomOrigin.x-event.x)*(zoomOrigin.x-event.x))+((zoomOrigin.y-event.y)*(zoomOrigin.y-event.y)));//find the length of the vector
-
+					cameraControl(event);
 				} else {
 
 					command.updateMarquee(event.x - cameraDrag.x, event.y
@@ -339,5 +304,46 @@ public class GameScreen extends Screen {
 	public void backButton() {
 		// pause();
 		command.commandStateToggle();
+	}
+	public void cameraControlInitiate(TouchEvent event)
+	{
+		cameraOrigin = new Point(event.x - cameraDrag.x, event.y
+				- cameraDrag.y);
+			zoomOrigin = new PointF(event.x, event.y);
+		if(event.pointer==0)
+			{
+				finger1=new PointF(event.x,event.y);
+			}
+		if(event.pointer==1)
+		{
+			finger2=new PointF(event.x,event.y);
+		}
+		if(event.pointer>0)
+		{
+			
+			zoomPinchDistanceInitial = (float) Math.sqrt(((finger1.x-finger2.x)*(finger1.x-finger2.x))+((finger1.y-finger2.y)*(finger1.y-finger2.y)));//find the length of the vector
+		}
+		
+	}
+	public void cameraControl(TouchEvent event)
+	{
+	if(event.pointer==0)
+	{
+		finger1 = new PointF(event.x,event.y);
+	}
+	if(event.pointer==1)
+	{
+		finger2 = new PointF(event.x,event.y);
+		zoomPinchDistance = (float) Math.sqrt(((finger1.x-finger2.x)*(finger1.x-finger2.x))+((finger1.y-finger2.y)*(finger1.y-finger2.y)));//find the length of the vector
+		if(zoomPinchDistanceInitial!=0)
+		{
+			zoomIncrease=zoomScaleInitial*(zoomPinchDistance/zoomPinchDistanceInitial);			
+			zoomScale = zoomIncrease;
+		}
+	}
+	
+	cameraDrag = new Point(event.x - cameraOrigin.x, event.y
+			- cameraOrigin.y);
+	//zoomPinchDistance=(float) Math.sqrt(((zoomOrigin.x-event.x)*(zoomOrigin.x-event.x))+((zoomOrigin.y-event.y)*(zoomOrigin.y-event.y)));//find the length of the vector
 	}
 }
