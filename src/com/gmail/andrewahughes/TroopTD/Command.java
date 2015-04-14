@@ -147,7 +147,7 @@ public class Command {// this class will contain all the methods to interact
 			{
 				rows=rows+difference;
 			}
-			if(rows==1)
+			else if(rows==1)
 			{
 				columns=columns+difference;
 			}
