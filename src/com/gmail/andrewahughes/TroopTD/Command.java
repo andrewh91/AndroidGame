@@ -22,12 +22,11 @@ public class Command {// this class will contain all the methods to interact
 	}
 
 	enum selectionState {
-		tap, // normal tap to select mode
 		marquee, // draw a rectangle to select mode
 	}
 
 	interactionState state = interactionState.select;
-	selectionState selState = selectionState.tap;
+	selectionState selState = selectionState.marquee;
 
 	boolean commandState, selectMode, movementMode, editMode;
 	int destX, destY;
@@ -64,7 +63,7 @@ public class Command {// this class will contain all the methods to interact
 					}
 				}
 			}
-			 else if (selState == selectionState.tap||getMarqueeSize(positionX, positionY)<=25) {
+			 else if (getMarqueeSize(positionX, positionY)<=25) {
 				for (int i = 0; i < len; i++) {
 
 					if (troops.get(i).rectangle.contains(positionX, positionY)) {
@@ -251,21 +250,7 @@ public class Command {// this class will contain all the methods to interact
 		}
 	}
 
-	public void toggleSelState() {
-		if (selState == selectionState.marquee) {
-			selState = selectionState.tap;
-		} else if (selState == selectionState.tap) {
-			selState = selectionState.marquee;
-		}
-	}
 
-	public void toggleCameraState() {
-		if (selState == selectionState.marquee) {
-			selState = selectionState.tap;
-		} else if (selState == selectionState.tap) {
-			selState = selectionState.marquee;
-		}
-	}
 
 	public Rect getMarqueeRect() {
 		return marqueeRect;

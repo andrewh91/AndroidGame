@@ -32,15 +32,15 @@ public class GameScreen extends Screen {
 	Bullet bullet;
 	Command command;
 	boolean commandState = true;
-	boolean cameraMode = true;
+	//boolean cameraMode = true;
 	int no = 0;
 	Point cameraOrigin;
 	Point cameraDrag;
 	PointF zoomOrigin, zoomDrag, zoomDrag2, finger1, finger2;
 	float zoomScaleInitial = 1, zoomPinchDistanceInitial, zoomPinchDistance,
 			zoomIncrease=1, zoomScale = 1;
-	Button selectBtn;
-	Button cameraBtn;
+	//Button selectBtn;//don't need cos marquee select can also tap select
+	//Button cameraBtn;//don't need cos can control camera with two fingers
 
 	// Rect b,c;
 	public GameScreen(Game game) {
@@ -67,8 +67,8 @@ public class GameScreen extends Screen {
 		cameraDrag = new Point(0, 0);
 		finger1 = new PointF(0, 0);
 		finger2 = new PointF(0, 0);
-		selectBtn = new Button(1200, 10, "Select", "Marquee Select", true);
-		cameraBtn = new Button(1200, 90, "Camera", "No camera", true);
+		//selectBtn = new Button(1200, 10, "Select", "Marquee Select", true);
+		//cameraBtn = new Button(1200, 90, "Camera", "No camera", true);
 		// b = new Rect(100,100,100,100);
 		// c = new Rect();
 	}
@@ -117,13 +117,17 @@ public class GameScreen extends Screen {
 				// button logic
 				// if we touch a button do nothing, but if touch up event is
 				// also on button then press button
-				if (selectBtn.rectangle.contains(event.x, event.y)) {
+				/*if (selectBtn.rectangle.contains(event.x, event.y)) {
 
 				} else if (cameraBtn.rectangle.contains(event.x, event.y)) {
 
-				} else {// if no button is pressed
-						// c.left=event.x;
-						// c.top=event.y;
+				} else */// if no button is pressed
+				if (event.pointer>0) //if two fingers down
+					cameraControlInitiate(event);
+				else
+				{
+				
+			
 					command.startMarquee(event.x - cameraDrag.x, event.y
 							- cameraDrag.y);
 					/*
@@ -133,8 +137,6 @@ public class GameScreen extends Screen {
 					// }
 
 				}
-				if (cameraMode) 
-					cameraControlInitiate(event);
 			}
 
 			if (event.type == TouchEvent.TOUCH_UP) {
@@ -142,7 +144,7 @@ public class GameScreen extends Screen {
 				// button logic
 				// if we touch a button do nothing, but if touch up event is
 				// also on button then press button
-				if (selectBtn.rectangle.contains(event.x, event.y)) {
+				/*if (selectBtn.rectangle.contains(event.x, event.y)) {
 					selectBtn.toggle();
 					command.toggleSelState();
 				} else if (cameraBtn.rectangle.contains(event.x, event.y)) {
@@ -152,7 +154,7 @@ public class GameScreen extends Screen {
 					} else if (cameraMode == false) {
 						cameraMode = true;
 					}
-				} else {
+				} else*/ {
 					command.evaluateTouch(event.x - cameraDrag.x, event.y
 							- cameraDrag.y);
 				}
@@ -164,7 +166,7 @@ public class GameScreen extends Screen {
 				// c.right=event.x;
 				// c.top=event.y;
 				// c.bottom=event.y;
-				if (cameraMode) {
+				if (event.pointer>0) {
 					cameraControl(event);
 				} else {
 
@@ -263,8 +265,8 @@ public class GameScreen extends Screen {
 		Graphics g = game.getGraphics();
 
 		command.drawMarquee(g, cameraDrag);
-		selectBtn.paint(g, paint);
-		cameraBtn.paint(g, paint);
+		//selectBtn.paint(g, paint);
+		//cameraBtn.paint(g, paint);
 	}
 
 	private void drawPausedUI() {
