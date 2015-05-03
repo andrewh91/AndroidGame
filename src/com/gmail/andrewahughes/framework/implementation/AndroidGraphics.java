@@ -138,16 +138,26 @@ public class AndroidGraphics implements Graphics {
 		canvas.drawBitmap(((AndroidImage)Image).bitmap,x-(Image.getWidth()/2),y-(Image.getHeight()/2),null);
 	}
 	
-	public void drawScaledImage(Image Image,int x,int y, int width, int height, int srcX,int srcY, int srcWidth, int srcHeight){
-		srcRect.left=srcX;
+	public void drawScaledImage(Image Image,int x,int y, int width, int height,/* int srcX,int srcY, int srcWidth, int srcHeight,*/ float scale/*,int originX, int originY*/){
+		/*srcRect.left=srcX;
 		srcRect.top=srcY;
 		srcRect.right=srcX+srcWidth;
-		srcRect.bottom=srcY+srcHeight;
+		srcRect.bottom=srcY+srcHeight;*/
+
+		srcRect.left=0;
+		srcRect.top=0;
+		srcRect.right=Image.getWidth();
+		srcRect.bottom=Image.getHeight();
 		
-		dstRect.left=x;
-		dstRect.top=y;
-		dstRect.right=x+width;
-		dstRect.bottom=y+height;
+		dstRect.left= (int) (x);
+		dstRect.top=(int) (((y)));
+		dstRect.right=(int) (((x+(width*scale))));
+		dstRect.bottom=(int) (((y+(height*scale))));	
+		/*
+		dstRect.left= (int) (originX+((x-originX)*scale));
+		dstRect.top=(int) (originY+((y-originY)*scale));
+		dstRect.right=(int) (originX+((x+width-originX)*scale));
+		dstRect.bottom=(int) (originY+((y+height-originY)*scale));*/
 		
 		canvas.drawBitmap(((AndroidImage)Image).bitmap,srcRect,dstRect,null);
 	}

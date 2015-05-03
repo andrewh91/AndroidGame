@@ -32,13 +32,14 @@ public class GameScreen extends Screen {
 	Bullet bullet;
 	Command command;
 	boolean commandState = true;
+	boolean cameraMode = false;
 	//boolean cameraMode = true;
 	int no = 0;
 	Point cameraOrigin;
 	Point cameraDrag;
 	PointF zoomOrigin, zoomDrag, zoomDrag2, finger1, finger2;
 	float zoomScaleInitial = 1, zoomPinchDistanceInitial, zoomPinchDistance,
-			zoomIncrease=1, zoomScale = 1;
+			zoomIncrease=1, zoomScale = 1,zoomScale2=1;
 	//Button selectBtn;//don't need cos marquee select can also tap select
 	//Button cameraBtn;//don't need cos can control camera with two fingers
 
@@ -67,6 +68,8 @@ public class GameScreen extends Screen {
 		cameraDrag = new Point(0, 0);
 		finger1 = new PointF(0, 0);
 		finger2 = new PointF(0, 0);
+
+		zoomOrigin = new PointF(1,1); //zoomDrag, zoomDrag2, finger1, finger2;
 		//selectBtn = new Button(1200, 10, "Select", "Marquee Select", true);
 		//cameraBtn = new Button(1200, 90, "Camera", "No camera", true);
 		// b = new Rect(100,100,100,100);
@@ -112,7 +115,8 @@ public class GameScreen extends Screen {
 			//pointerPos = "touch "+event.x+","+event.y+"zoomOrigin "+zoomOrigin+"zoomDrag"+zoomDrag+"zoomScale"+zoomScale+"distinit"+zoomPinchDistanceInitial+"dist"+zoomPinchDistance;
 
 			//pointerPos = "f1 "+finger1+"f2 "+finger2+"pointer "+event.pointer+"type "+event.type+"initial dist "+zoomPinchDistanceInitial+"dist "+zoomPinchDistance+"scale "+zoomScale+"increase "+zoomIncrease;
-			
+			//pointerPos="pos "+event.x+" "+event.y+" fin "+finger1+" fin2 "+finger2+" dist init "+zoomPinchDistanceInitial+" dist "+zoomPinchDistance+" "+zoomIncrease+" "+zoomScale+" "+zoomOrigin;
+			pointerPos="dist "+zoomPinchDistance+" distinit "+zoomPinchDistanceInitial+" z1 "+zoomScale+" z2 "+zoomScale2+" p1 "+finger1+" p2 "+finger2;
 			if (event.type == TouchEvent.TOUCH_DOWN) {
 				// button logic
 				// if we touch a button do nothing, but if touch up event is
@@ -123,7 +127,9 @@ public class GameScreen extends Screen {
 
 				} else */// if no button is pressed
 				if (event.pointer>0) //if two fingers down
-					cameraControlInitiate(event);
+				{
+					
+				}
 				else
 				{
 				
@@ -159,6 +165,8 @@ public class GameScreen extends Screen {
 							- cameraDrag.y);
 				}
 				zoomScaleInitial=zoomScale;
+				cameraMode=false;
+				
 
 			}
 			if (event.type == TouchEvent.TOUCH_DRAGGED) {
@@ -166,7 +174,13 @@ public class GameScreen extends Screen {
 				// c.right=event.x;
 				// c.top=event.y;
 				// c.bottom=event.y;
+				cameraControl1(event);
+				
 				if (event.pointer>0) {
+					if(cameraMode==false)
+					{
+						cameraControlInitiate(event);	
+					}
 					cameraControl(event);
 				} else {
 
@@ -227,7 +241,7 @@ public class GameScreen extends Screen {
 		// 234));//cornflower blue :)
 		g.drawARGB(255, 153, 217, 234);// another way to draw a blue background
 
-		command.paint(g, cameraDrag);
+		command.paint(g, cameraDrag,zoomOrigin,zoomScale,zoomScale2);
 
 		g.drawString(pointerPos, 10, 30, blackText);
 		// Secondly, draw the UI above the game elements.
@@ -309,9 +323,9 @@ public class GameScreen extends Screen {
 	}
 	public void cameraControlInitiate(TouchEvent event)
 	{
-		cameraOrigin = new Point(event.x - cameraDrag.x, event.y
-				- cameraDrag.y);
-			zoomOrigin = new PointF(event.x, event.y);
+			//zoomOrigin = new PointF(event.x, event.y);
+	
+		cameraMode=true;
 		if(event.pointer==0)
 			{
 				finger1=new PointF(event.x,event.y);
@@ -320,32 +334,46 @@ public class GameScreen extends Screen {
 		{
 			finger2=new PointF(event.x,event.y);
 		}
+
+		cameraOrigin = new Point((int)(finger1.x+finger2.x)/2 - cameraDrag.x,(int) (finger1.y+finger2.y)/2
+				- cameraDrag.y);
+		zoomOrigin=new PointF((finger1.x+finger2.x)/2,(finger1.y+finger2.y)/2);
+		zoomPinchDistanceInitial=0;
 		if(event.pointer>0)
 		{
-			
-			zoomPinchDistanceInitial = (float) Math.sqrt(((finger1.x-finger2.x)*(finger1.x-finger2.x))+((finger1.y-finger2.y)*(finger1.y-finger2.y)));//find the length of the vector
+			command.storeOffSet();
+			//zoomScale=zoomScale2;
+			zoomScale2=1;
+			zoomPinchDistance = 		(float) Math.sqrt(((finger1.x-finger2.x)*(finger1.x-finger2.x))+((finger1.y-finger2.y)*(finger1.y-finger2.y)));//find the length of the vector
+			zoomPinchDistanceInitial = 	(float) Math.sqrt(((finger1.x-finger2.x)*(finger1.x-finger2.x))+((finger1.y-finger2.y)*(finger1.y-finger2.y)));//find the length of the vector
 		}
 		
 	}
+	public void cameraControl1(TouchEvent event)
+	{
+		if(event.pointer==0)
+		{
+			finger1 = new PointF(event.x,event.y);
+		}
+	}
 	public void cameraControl(TouchEvent event)
 	{
-	if(event.pointer==0)
-	{
-		finger1 = new PointF(event.x,event.y);
-	}
 	if(event.pointer==1)
 	{
 		finger2 = new PointF(event.x,event.y);
+	}
+	if(event.pointer>0)
+	{
 		zoomPinchDistance = (float) Math.sqrt(((finger1.x-finger2.x)*(finger1.x-finger2.x))+((finger1.y-finger2.y)*(finger1.y-finger2.y)));//find the length of the vector
 		if(zoomPinchDistanceInitial!=0)
 		{
 			zoomIncrease=zoomScaleInitial*(zoomPinchDistance/zoomPinchDistanceInitial);			
 			zoomScale = zoomIncrease;
+			zoomScale2=zoomPinchDistance/zoomPinchDistanceInitial;
 		}
 	}
 	
-	cameraDrag = new Point(event.x - cameraOrigin.x, event.y
-			- cameraOrigin.y);
-	//zoomPinchDistance=(float) Math.sqrt(((zoomOrigin.x-event.x)*(zoomOrigin.x-event.x))+((zoomOrigin.y-event.y)*(zoomOrigin.y-event.y)));//find the length of the vector
+	cameraDrag = new Point(	(int) ((finger1.x+finger2.x)/2 - cameraOrigin.x),
+							(int) ((finger1.y+finger2.y)/2 - cameraOrigin.y));
 	}
 }

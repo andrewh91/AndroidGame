@@ -290,13 +290,23 @@ public class Command {// this class will contain all the methods to interact
 					getMarqueeRect().right+cameraDrag.x,getMarqueeRect().bottom+cameraDrag.y, Color.argb(50, 50, 50, 255));
 		}
 	}
-
-	public void paint(Graphics graphics, Point camera) {
+public void storeOffSet()
+{
+	int len = troops.size();
+	for (int i = 0; i < len; i++) {
+		troops.get(i).offSet=troops.get(i).offSet2;
+	}
+}
+	public void paint(Graphics graphics, Point camera,PointF zoomOrigin, float zoom, float zoom2) {
 		int len = troops.size();
 		for (int i = 0; i < len; i++) {
-			graphics.drawImage(troops.get(i).image,
+			troops.get(i).offSet2=new PointF(troops.get(i).offSet.x+(zoomOrigin.x-troops.get(i).offSet.x)-(zoomOrigin.x-troops.get(i).offSet.x)*(zoom2),
+					troops.get(i).offSet.y+(zoomOrigin.y-troops.get(i).offSet.y)-(zoomOrigin.y-troops.get(i).offSet.y)*(zoom2));//o+(z-o)-(z-o)*(1/s)
+			graphics.drawScaledImage(troops.get(i).image,(int) ( troops.get(i).position.x + camera.x+troops.get(i).offSet2.x),(int) ( troops.get(i).position.y + camera.y+troops.get(i).offSet2.y),troops.get(i).rectangle.width(),troops.get(i).rectangle.height(),zoom/*,(int)zoomOrigin.x,(int)zoomOrigin.y*/);
+					
+					/*troops.get(i).image,
 					(int) troops.get(i).position.x + camera.x,
-					(int) troops.get(i).position.y + camera.y);
+					(int) troops.get(i).position.y + camera.y);*/
 			graphics.drawRect(new Rect(troops.get(i).rectangle.left + camera.x,
 					troops.get(i).rectangle.top + camera.y,
 					troops.get(i).rectangle.right + camera.x,

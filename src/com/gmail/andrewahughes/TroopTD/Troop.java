@@ -14,7 +14,8 @@ import android.graphics.Rect;
 public class Troop {
 
 	List<Destination> destination = new ArrayList<Destination>();
-	PointF position;
+	PointF position,offSet,offSet2;
+	
 	float speed;
 	double length;
 	PointF direction;
@@ -29,6 +30,8 @@ public class Troop {
 	public Troop(int posX,int posY)
 	{
 		position=new PointF(posX, posY);
+		offSet = new PointF(0,0);
+		offSet2 =new PointF(0,0);
 		speed = 5;
 		image = Assets.menu;
 		rectangle = new Rect(posX-margin,posY-margin,posX+image.getWidth()+margin,posY+image.getHeight()+margin);

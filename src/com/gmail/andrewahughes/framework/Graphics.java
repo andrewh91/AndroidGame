@@ -35,6 +35,8 @@ public interface Graphics {
 	
 	public void drawARGB(int i, int j,int k, int l);
 
+	public void drawScaledImage(Image Image,int x,int y, int width, int height, /*int srcX,int srcY, int srcWidth, int srcHeight,*/ float scale/*,int originX, int originY*/);
+
 
 
 }

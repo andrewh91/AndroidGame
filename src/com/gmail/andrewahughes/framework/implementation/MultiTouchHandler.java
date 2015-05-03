@@ -61,6 +61,8 @@ public class MultiTouchHandler implements TouchHandler{
 				case MotionEvent.ACTION_POINTER_DOWN:
 					touchEvent=touchEventPool.newObject();
 					touchEvent.type=touchEvent.TOUCH_DOWN;
+					//touchEvent.index=pointerIndex;
+					//touchEvent.index=(event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK)>> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
 					touchEvent.pointer=pointerId;
 					touchEvent.x=touchX[i]=(int)(event.getX(i)*scaleX);
 					touchEvent.y=touchY[i]=(int)(event.getY(i)*scaleY);
@@ -73,6 +75,7 @@ public class MultiTouchHandler implements TouchHandler{
 				case MotionEvent.ACTION_CANCEL:
 					touchEvent=touchEventPool.newObject();
 					touchEvent.type=TouchEvent.TOUCH_UP;
+					//touchEvent.index=pointerIndex;
 					touchEvent.pointer=pointerId;
 					touchEvent.x=touchX[i]=(int)(event.getX(i)*scaleX);
 					touchEvent.y=touchY[i]=(int)(event.getY(i)*scaleY);
@@ -84,6 +87,7 @@ public class MultiTouchHandler implements TouchHandler{
 				case MotionEvent.ACTION_MOVE:
 					touchEvent=touchEventPool.newObject();
 					touchEvent.type=TouchEvent.TOUCH_DRAGGED;
+					//touchEvent.index=pointerIndex;
 					touchEvent.pointer=pointerId;
 					touchEvent.x=touchX[i]=(int)(event.getX(i)*scaleX);
 					touchEvent.y=touchY[i]=(int)(event.getY(i)*scaleY);
@@ -141,7 +145,7 @@ public class MultiTouchHandler implements TouchHandler{
 		}
 	}
 	//returns the index for a given pointerId or -1 if no index.
-	private int getIndex(int pointerId){
+	public int getIndex(int pointerId){
 		for(int i = 0 ; i < MAX_TOUCHPOINTS;i++){
 			if(id[i]==pointerId){
 				return i ; 
