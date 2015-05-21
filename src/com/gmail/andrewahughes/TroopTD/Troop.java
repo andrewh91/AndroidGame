@@ -14,7 +14,7 @@ import android.graphics.Rect;
 public class Troop {
 
 	List<Destination> destination = new ArrayList<Destination>();
-	PointF position,offSet,offSet2;
+	PointF position, prevPos,offSet,offSet2;
 	
 	float speed;
 	double length;
@@ -30,7 +30,8 @@ public class Troop {
 	public Troop(int posX,int posY)
 	{
 		position=new PointF(posX, posY);
-		offSet = new PointF(0,0);
+		prevPos=new PointF(posX, posY);
+		offSet = new PointF(posX,posY);
 		offSet2 =new PointF(0,0);
 		speed = 5;
 		image = Assets.menu;
@@ -58,8 +59,12 @@ public class Troop {
 	}
 	public void moveTo(float dt)
 	{
+		
 		position.x+= direction.x*speed*dt;//increase position by direction
 		position.y+= direction.y*speed*dt;
+		offSet2.x+= direction.x*speed*dt;
+		offSet2.y+= direction.y*speed*dt;
+
 		if(direction.x<0)//if the direction is to the left...
 		{
 			if(position.x<destination.get(0).pointF.x)//...and we go further left than the destination ...
@@ -99,7 +104,9 @@ public class Troop {
 				setDirection();
 			
 		}
+		
 		updateRect((int)position.x,(int)position.y);
+
 		
 	}
 	public void updateRect(int x,int y)

@@ -28,7 +28,9 @@ public class GameScreen extends Screen {
 	int livesLeft = 1;
 	Paint paint;
 	Paint blackText;
-	String pointerPos;
+	String text;
+	String text1;
+	String text2;
 	Bullet bullet;
 	Command command;
 	boolean commandState = true;
@@ -60,7 +62,9 @@ public class GameScreen extends Screen {
 		blackText.setColor(Color.BLACK);
 		blackText.setTextSize(20);
 
-		pointerPos = new String();
+		text = new String();
+		text1 = new String();
+		text2 = new String();
 
 		bullet = new Bullet();
 		command = new Command();
@@ -116,7 +120,10 @@ public class GameScreen extends Screen {
 
 			//pointerPos = "f1 "+finger1+"f2 "+finger2+"pointer "+event.pointer+"type "+event.type+"initial dist "+zoomPinchDistanceInitial+"dist "+zoomPinchDistance+"scale "+zoomScale+"increase "+zoomIncrease;
 			//pointerPos="pos "+event.x+" "+event.y+" fin "+finger1+" fin2 "+finger2+" dist init "+zoomPinchDistanceInitial+" dist "+zoomPinchDistance+" "+zoomIncrease+" "+zoomScale+" "+zoomOrigin;
-			pointerPos="dist "+zoomPinchDistance+" distinit "+zoomPinchDistanceInitial+" z1 "+zoomScale+" z2 "+zoomScale2+" p1 "+finger1+" p2 "+finger2;
+			//pointerPos="dist "+zoomPinchDistance+" distinit "+zoomPinchDistanceInitial+" z1 "+zoomScale+" z2 "+zoomScale2+" p1 "+finger1+" p2 "+finger2;
+			text="offset "+command.troops.get(0).offSet+"\t offset2 "+command.troops.get(0).offSet2+" \tpos "+command.troops.get(0).position;
+			text1="offset "+command.troops.get(1).offSet+"\t offset2 "+command.troops.get(1).offSet2+"\t pos "+command.troops.get(1).position;
+			text2=" origin "+zoomOrigin+" zoom "+zoomScale+"\t zoom2 "+zoomScale2+"  Pos"+command.troops.get(0).position+" PrevPos " +command.troops.get(0).prevPos;
 			if (event.type == TouchEvent.TOUCH_DOWN) {
 				// button logic
 				// if we touch a button do nothing, but if touch up event is
@@ -243,7 +250,9 @@ public class GameScreen extends Screen {
 
 		command.paint(g, cameraDrag,zoomOrigin,zoomScale,zoomScale2);
 
-		g.drawString(pointerPos, 10, 30, blackText);
+		g.drawString(text, 10, 30, blackText);
+		g.drawString(text1, 10, 60, blackText);
+		g.drawString(text2, 10, 90, blackText);
 		// Secondly, draw the UI above the game elements.
 		if (state == GameState.Ready)
 			drawReadyUI();
