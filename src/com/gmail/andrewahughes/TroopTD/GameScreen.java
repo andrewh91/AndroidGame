@@ -123,7 +123,7 @@ public class GameScreen extends Screen {
 			//pointerPos="dist "+zoomPinchDistance+" distinit "+zoomPinchDistanceInitial+" z1 "+zoomScale+" z2 "+zoomScale2+" p1 "+finger1+" p2 "+finger2;
 			text="offset "+command.troops.get(0).offSet+"\t offset2 "+command.troops.get(0).offSet2+" \tpos "+command.troops.get(0).position;
 			text1="offset "+command.troops.get(1).offSet+"\t offset2 "+command.troops.get(1).offSet2+"\t pos "+command.troops.get(1).position;
-			text2=" origin "+zoomOrigin+" zoom "+zoomScale+"\t zoom2 "+zoomScale2+"  Pos"+command.troops.get(0).position+" PrevPos " +command.troops.get(0).prevPos;
+			text2=" origin "+zoomOrigin+" zoom "+zoomScale+"  Pos"+command.troops.get(0).position+" zoomincrease " +zoomIncrease;
 			if (event.type == TouchEvent.TOUCH_DOWN) {
 				// button logic
 				// if we touch a button do nothing, but if touch up event is
@@ -141,8 +141,8 @@ public class GameScreen extends Screen {
 				{
 				
 			
-					command.startMarquee(event.x - cameraDrag.x, event.y
-							- cameraDrag.y);
+					command.startMarquee((int)((event.x - cameraDrag.x)/zoomScale), (int)((event.y
+							- cameraDrag.y)/zoomScale));
 					/*
 					 * if(no<3) { command.createTroop(event.x,event.y); no++; }
 					 * else {
@@ -168,8 +168,8 @@ public class GameScreen extends Screen {
 						cameraMode = true;
 					}
 				} else*/ {
-					command.evaluateTouch(event.x - cameraDrag.x, event.y
-							- cameraDrag.y);
+					command.evaluateTouch((int)((event.x - cameraDrag.x)/zoomScale), (int)((event.y
+							- cameraDrag.y)/zoomScale));
 				}
 				zoomScaleInitial=zoomScale;
 				cameraMode=false;
@@ -191,8 +191,8 @@ public class GameScreen extends Screen {
 					cameraControl(event);
 				} else {
 
-					command.updateMarquee(event.x - cameraDrag.x, event.y
-							- cameraDrag.y);
+					command.updateMarquee((int)((event.x - cameraDrag.x)/zoomScale), (int)((event.y
+							- cameraDrag.y)/zoomScale));
 				}
 			}
 
@@ -248,7 +248,7 @@ public class GameScreen extends Screen {
 		// 234));//cornflower blue :)
 		g.drawARGB(255, 153, 217, 234);// another way to draw a blue background
 
-		command.paint(g, cameraDrag,zoomOrigin,zoomScale,zoomScale2);
+		command.paint(g, cameraDrag,zoomScale);
 
 		g.drawString(text, 10, 30, blackText);
 		g.drawString(text1, 10, 60, blackText);
@@ -287,7 +287,7 @@ public class GameScreen extends Screen {
 	private void drawRunningUI() {
 		Graphics g = game.getGraphics();
 
-		command.drawMarquee(g, cameraDrag);
+		command.drawMarquee(g, cameraDrag,zoomScale);
 		//selectBtn.paint(g, paint);
 		//cameraBtn.paint(g, paint);
 	}
@@ -350,8 +350,7 @@ public class GameScreen extends Screen {
 		zoomPinchDistanceInitial=0;
 		if(event.pointer>0)
 		{
-			command.storeOffSet();
-			//zoomScale=zoomScale2;
+
 			zoomScale2=1;
 			zoomPinchDistance = 		(float) Math.sqrt(((finger1.x-finger2.x)*(finger1.x-finger2.x))+((finger1.y-finger2.y)*(finger1.y-finger2.y)));//find the length of the vector
 			zoomPinchDistanceInitial = 	(float) Math.sqrt(((finger1.x-finger2.x)*(finger1.x-finger2.x))+((finger1.y-finger2.y)*(finger1.y-finger2.y)));//find the length of the vector
@@ -376,9 +375,21 @@ public class GameScreen extends Screen {
 		zoomPinchDistance = (float) Math.sqrt(((finger1.x-finger2.x)*(finger1.x-finger2.x))+((finger1.y-finger2.y)*(finger1.y-finger2.y)));//find the length of the vector
 		if(zoomPinchDistanceInitial!=0)
 		{
-			zoomIncrease=zoomScaleInitial*(zoomPinchDistance/zoomPinchDistanceInitial);			
-			zoomScale = zoomIncrease;
-			zoomScale2=zoomPinchDistance/zoomPinchDistanceInitial;
+
+			if(zoomScale>=10)//zoomscale is the total zoom
+			{
+				zoomScale=10;
+			}
+			else
+			{
+				zoomIncrease=zoomScaleInitial*(zoomPinchDistance/zoomPinchDistanceInitial);			
+				zoomScale = zoomIncrease;
+				zoomScale2=zoomPinchDistance/zoomPinchDistanceInitial;
+			}
+			if(zoomScale2>=10)//zoomscale2is the current zoom increase of this gesture
+			{
+				zoomScale2=10;
+			}
 		}
 	}
 	
