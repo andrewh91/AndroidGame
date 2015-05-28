@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory.Options;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 
@@ -102,6 +103,17 @@ public class AndroidGraphics implements Graphics {
 		paint.setColor(color);
 		paint.setStyle(Style.FILL);
 		canvas.drawRect(rectangle,paint);
+	}
+	@Override
+	public void drawRect(PointF centre,int width,int height,float scale,PointF camera, int color){
+		paint.setColor(color);
+		paint.setStyle(Style.FILL);
+		canvas.drawRect( new Rect(
+				(int)((centre.x-(width/2))*scale+camera.x),
+				(int)((centre.y-(height/2))*scale+camera.y),
+				(int)((centre.x+(width/2))*scale+camera.x),
+				(int)((centre.y+(height/2))*scale+camera.y)),
+				paint);
 	}
 	@Override
 	public void drawARGB(int a, int r, int g, int b ){

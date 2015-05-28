@@ -116,6 +116,7 @@ public class Troop {
 		rectangle.right = x+image.getWidth()+margin;
 		rectangle.bottom = y+image.getHeight()+margin;
 	}
+
 	public void removeDirection()
 	{
 		destination.remove(0);

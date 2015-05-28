@@ -1,6 +1,7 @@
 package com.gmail.andrewahughes.framework;
 
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 
@@ -18,6 +19,8 @@ public interface Graphics {
 	public void drawRect(int x, int y, int width, int height, int color);
 	
 	public void drawRect(Rect rectangle, int color);
+
+	public void drawRect(PointF centre,int width, int height, float scale,PointF camera, int color);
 	
 	public void drawImage(Image image,int x, int y, int srcX, int srcY, int srcWidth, int srcHeight);
 	
@@ -36,6 +39,7 @@ public interface Graphics {
 	public void drawARGB(int i, int j,int k, int l);
 
 	public void drawScaledImage(Image Image,int x,int y, int width, int height, /*int srcX,int srcY, int srcWidth, int srcHeight,*/ float scale/*,int originX, int originY*/);
+
 
 
 

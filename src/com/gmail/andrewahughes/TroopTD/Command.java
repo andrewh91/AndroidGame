@@ -36,6 +36,7 @@ public class Command {// this class will contain all the methods to interact
 	// int troopSelected=0;//might need an array instead
 	int destinationSelected = 0;
 	Rect marqueeRect = new Rect();
+	boolean marqueeAlive=false;
 
 	public Command() {
 		commandState = true;// movement is allowed - not paused
@@ -54,7 +55,10 @@ public class Command {// this class will contain all the methods to interact
 		int len = troops.size();
 		if (state == interactionState.select) {
 			 if (selState == selectionState.marquee&&getMarqueeSize(positionX, positionY)>25) {   //if in marquee select mode and we draw a big enough rect
-				finishMarquee(positionX, positionY);
+				if(marqueeAlive)
+				{
+					finishMarquee(positionX, positionY);
+				}
 				troopSelected.clear();
 				for (int i = 0; i < len; i++) {
 					
@@ -87,7 +91,10 @@ public class Command {// this class will contain all the methods to interact
 		}
 
 		else if (state == interactionState.direct) {
-			finishMarquee(positionX, positionY);
+			if(marqueeAlive)
+			{
+				finishMarquee(positionX, positionY);
+			}
 			directTo(troopSelected, positionX, positionY);
 			state = interactionState.select;
 		} else if (state == interactionState.edit) {
@@ -206,6 +213,7 @@ public class Command {// this class will contain all the methods to interact
 	public void startMarquee(int x, int y) {
 		marqueeRect.left = x;
 		marqueeRect.top = y;
+		marqueeAlive=true;
 	}
 
 	public int getMarqueeSize(int x,int y)
@@ -286,9 +294,12 @@ public class Command {// this class will contain all the methods to interact
 	}
 
 	public void drawMarquee(Graphics g,Point cameraDrag,float zoom) {
-		if (selState == selectionState.marquee) {
-			g.drawRect((int)(getMarqueeRect().left*zoom+cameraDrag.x),(int)(getMarqueeRect().top*zoom+cameraDrag.y),
-					(int)(getMarqueeRect().right*zoom+cameraDrag.x),(int)(getMarqueeRect().bottom*zoom+cameraDrag.y), Color.argb(50, 50, 50, 255));
+		if(marqueeAlive)
+		{
+			if (selState == selectionState.marquee) {
+				g.drawRect((int)(getMarqueeRect().left*zoom+cameraDrag.x),(int)(getMarqueeRect().top*zoom+cameraDrag.y),
+						(int)(getMarqueeRect().right*zoom+cameraDrag.x),(int)(getMarqueeRect().bottom*zoom+cameraDrag.y), Color.argb(50, 50, 50, 255));
+			}
 		}
 	}
 

@@ -35,6 +35,7 @@ public class GameScreen extends Screen {
 	Command command;
 	boolean commandState = true;
 	boolean cameraMode = false;
+	boolean disableControl = false;//variable to stop input commands while moving camera
 	//boolean cameraMode = true;
 	int no = 0;
 	Point cameraOrigin;
@@ -121,9 +122,11 @@ public class GameScreen extends Screen {
 			//pointerPos = "f1 "+finger1+"f2 "+finger2+"pointer "+event.pointer+"type "+event.type+"initial dist "+zoomPinchDistanceInitial+"dist "+zoomPinchDistance+"scale "+zoomScale+"increase "+zoomIncrease;
 			//pointerPos="pos "+event.x+" "+event.y+" fin "+finger1+" fin2 "+finger2+" dist init "+zoomPinchDistanceInitial+" dist "+zoomPinchDistance+" "+zoomIncrease+" "+zoomScale+" "+zoomOrigin;
 			//pointerPos="dist "+zoomPinchDistance+" distinit "+zoomPinchDistanceInitial+" z1 "+zoomScale+" z2 "+zoomScale2+" p1 "+finger1+" p2 "+finger2;
-			text="offset "+command.troops.get(0).offSet+"\t offset2 "+command.troops.get(0).offSet2+" \tpos "+command.troops.get(0).position;
+			/*text="offset "+command.troops.get(0).offSet+"\t offset2 "+command.troops.get(0).offSet2+" \tpos "+command.troops.get(0).position;
 			text1="offset "+command.troops.get(1).offSet+"\t offset2 "+command.troops.get(1).offSet2+"\t pos "+command.troops.get(1).position;
 			text2=" origin "+zoomOrigin+" zoom "+zoomScale+"  Pos"+command.troops.get(0).position+" zoomincrease " +zoomIncrease;
+			*/
+			text="disabled? "+disableControl+ " pointers "+event.pointer+"marquee alive "+command.marqueeAlive;
 			if (event.type == TouchEvent.TOUCH_DOWN) {
 				// button logic
 				// if we touch a button do nothing, but if touch up event is
@@ -135,14 +138,15 @@ public class GameScreen extends Screen {
 				} else */// if no button is pressed
 				if (event.pointer>0) //if two fingers down
 				{
-					
+					command.marqueeAlive=false;//stop drawing marquee
 				}
 				else
 				{
 				
-			
+			if(disableControl==false){
 					command.startMarquee((int)((event.x - cameraDrag.x)/zoomScale), (int)((event.y
 							- cameraDrag.y)/zoomScale));
+			}
 					/*
 					 * if(no<3) { command.createTroop(event.x,event.y); no++; }
 					 * else {
@@ -168,11 +172,19 @@ public class GameScreen extends Screen {
 						cameraMode = true;
 					}
 				} else*/ {
-					command.evaluateTouch((int)((event.x - cameraDrag.x)/zoomScale), (int)((event.y
+					if(disableControl==false)
+					{
+						command.evaluateTouch((int)((event.x - cameraDrag.x)/zoomScale), (int)((event.y
 							- cameraDrag.y)/zoomScale));
+					}
 				}
 				zoomScaleInitial=zoomScale;
+				
 				cameraMode=false;
+				if(event.pointer==0)//if you lift the last finger up, we no longer control the camera and so ...
+				{
+					disableControl=false;//allow touch controls
+				}
 				
 
 			}
@@ -184,6 +196,10 @@ public class GameScreen extends Screen {
 				cameraControl1(event);
 				
 				if (event.pointer>0) {
+					disableControl=true;//if more than one finger down disable controls since we are moving the camera
+
+						command.marqueeAlive=false;//stop drawing marquee
+					
 					if(cameraMode==false)
 					{
 						cameraControlInitiate(event);	
