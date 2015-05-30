@@ -51,6 +51,7 @@ public class MultiTouchHandler implements TouchHandler{
 					continue;
 				}
 				int pointerId = event.getPointerId(i);
+				int noOfPointers=event.getPointerCount();
 				if(event.getAction()!=MotionEvent.ACTION_MOVE&& i !=pointerIndex){
 					// if it's an up/down/cancel/out event, mask the id to see if we should process it for this touch
                     // point
@@ -61,8 +62,9 @@ public class MultiTouchHandler implements TouchHandler{
 				case MotionEvent.ACTION_POINTER_DOWN:
 					touchEvent=touchEventPool.newObject();
 					touchEvent.type=touchEvent.TOUCH_DOWN;
-					//touchEvent.index=pointerIndex;
-					//touchEvent.index=(event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK)>> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+					
+					touchEvent.noOfPointers=noOfPointers;
+					
 					touchEvent.pointer=pointerId;
 					touchEvent.x=touchX[i]=(int)(event.getX(i)*scaleX);
 					touchEvent.y=touchY[i]=(int)(event.getY(i)*scaleY);
@@ -75,7 +77,9 @@ public class MultiTouchHandler implements TouchHandler{
 				case MotionEvent.ACTION_CANCEL:
 					touchEvent=touchEventPool.newObject();
 					touchEvent.type=TouchEvent.TOUCH_UP;
-					//touchEvent.index=pointerIndex;
+					
+					touchEvent.noOfPointers=noOfPointers;
+					
 					touchEvent.pointer=pointerId;
 					touchEvent.x=touchX[i]=(int)(event.getX(i)*scaleX);
 					touchEvent.y=touchY[i]=(int)(event.getY(i)*scaleY);
@@ -87,7 +91,9 @@ public class MultiTouchHandler implements TouchHandler{
 				case MotionEvent.ACTION_MOVE:
 					touchEvent=touchEventPool.newObject();
 					touchEvent.type=TouchEvent.TOUCH_DRAGGED;
-					//touchEvent.index=pointerIndex;
+
+					touchEvent.noOfPointers=noOfPointers;
+					
 					touchEvent.pointer=pointerId;
 					touchEvent.x=touchX[i]=(int)(event.getX(i)*scaleX);
 					touchEvent.y=touchY[i]=(int)(event.getY(i)*scaleY);

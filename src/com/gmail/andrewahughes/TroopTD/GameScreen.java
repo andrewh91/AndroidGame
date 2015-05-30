@@ -181,7 +181,7 @@ public class GameScreen extends Screen {
 				zoomScaleInitial=zoomScale;
 				
 				cameraMode=false;
-				if(event.pointer==0)//if you lift the last finger up, we no longer control the camera and so ...
+				if(event.noOfPointers==1)//if you lift the last finger up, we no longer control the camera and so ...
 				{
 					disableControl=false;//allow touch controls
 				}
