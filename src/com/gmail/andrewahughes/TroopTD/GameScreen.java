@@ -33,6 +33,7 @@ public class GameScreen extends Screen {
 	String text2;
 	Bullet bullet;
 	Command command;
+	EnemyUpdate enemyUpdate;
 	boolean commandState = true;
 	boolean cameraMode = false;
 	boolean disableControl = false;//variable to stop input commands while moving camera
@@ -69,6 +70,7 @@ public class GameScreen extends Screen {
 
 		bullet = new Bullet();
 		command = new Command();
+		enemyUpdate = new EnemyUpdate();
 		cameraOrigin = new Point();
 		cameraDrag = new Point(0, 0);
 		finger1 = new PointF(0, 0);
@@ -114,6 +116,7 @@ public class GameScreen extends Screen {
 	private void updateRunning(List<TouchEvent> touchEvents, float deltaTime) {
 
 		command.update(deltaTime);
+		enemyUpdate.update(deltaTime);
 		int len = touchEvents.size();
 		for (int i = 0; i < len; i++) {
 			TouchEvent event = touchEvents.get(i);
@@ -265,6 +268,7 @@ public class GameScreen extends Screen {
 		g.drawARGB(255, 153, 217, 234);// another way to draw a blue background
 
 		command.paint(g, cameraDrag,zoomScale);
+		enemyUpdate.paint(g, cameraDrag,zoomScale);
 
 		g.drawString(text, 10, 30, blackText);
 		g.drawString(text1, 10, 60, blackText);
@@ -345,6 +349,7 @@ public class GameScreen extends Screen {
 	public void backButton() {
 		// pause();
 		command.commandStateToggle();
+		enemyUpdate.commandStateToggle();
 	}
 	public void cameraControlInitiate(TouchEvent event)
 	{

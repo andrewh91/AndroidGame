@@ -32,6 +32,7 @@ public class Command {// this class will contain all the methods to interact
 	int destX, destY;
 	int marqueeOriginX, marqueeOriginY;
 	List<Troop> troops = new ArrayList<Troop>();
+	//List<Troop> enemies = new ArrayList<Troop>();
 	List<Integer> troopSelected = new ArrayList<Integer>();
 	// int troopSelected=0;//might need an array instead
 	int destinationSelected = 0;
@@ -48,6 +49,10 @@ public class Command {// this class will contain all the methods to interact
 			troops.add(new Troop((int) (1280 * n.nextDouble()), (int) (800 * n
 					.nextDouble())));
 		}
+		/*for(int j=0;j<10;j++)
+		{
+			enemies.add(new Troop(0,400));
+		}*/
 
 	}
 
@@ -201,12 +206,25 @@ public class Command {// this class will contain all the methods to interact
 	public void update(float dt) {
 
 		int len = troops.size();
+		int a=640;
 		if (commandState) {
 			for (int i = 0; i < len; i++) {
 				if (troops.get(i).destination.size() > 0) {
 					troops.get(i).moveTo(dt);
 				}
 			}
+			/*for(int j = 0;j<enemies.size();j++)
+			{
+				if(enemies.get(j).destination.size()>0)
+				{
+					enemies.get(j).moveTo(dt);
+				}
+				else
+				{
+					a*=-1;
+					enemies.get(j).addDestination(640+a, 400);
+				}
+			}*/
 		}
 	}
 
@@ -315,5 +333,15 @@ public class Command {// this class will contain all the methods to interact
 					255, 0, 0));
 			troops.get(i).paint(graphics, camera);
 		}
+		/*for(int j = 0; j < enemies.size();j++){
+			graphics.drawScaledImage(enemies.get(j).image,(int) (enemies.get(j).position.x*zoom+camera.x),(int) (  enemies.get(j).position.y*zoom+camera.y),enemies.get(j).rectangle.width(),enemies.get(j).rectangle.height(),zoom);
+			
+			graphics.drawRect(new Rect((int)(enemies.get(j).rectangle.left*zoom + camera.x),
+					(int)(enemies.get(j).rectangle.top*zoom + camera.y),
+					(int)(enemies.get(j).rectangle.right*zoom + camera.x),
+					(int)(enemies.get(j).rectangle.bottom*zoom + camera.y)), Color.argb(100,
+					255, 0, 0));
+			enemies.get(j).paint(graphics, camera);
+		}*/
 	}
 }

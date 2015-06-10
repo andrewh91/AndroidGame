@@ -1,3 +1,4 @@
+
 package com.gmail.andrewahughes.TroopTD;
 
 import java.util.ArrayList;
@@ -11,23 +12,24 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 
-public class Troop {
+public class Enemy {
+
 
 	List<Destination> destination = new ArrayList<Destination>();
 	PointF position, prevPos,offSet,offSet2;
-	boolean alive = true;
+	boolean alive = false;
 	float speed;
 	double length;
 	PointF direction;
 	Rect rectangle;
 	Image image;
 	int margin=5;
-	public Troop()
+	public Enemy()
 	{
 		image = Assets.menu;
 		rectangle = new Rect(500,300,500+image.getWidth(),300+image.getHeight());
 	}
-	public Troop(int posX,int posY)
+	public Enemy(int posX,int posY)
 	{
 		position=new PointF(posX, posY);
 		prevPos=new PointF(posX, posY);
@@ -36,6 +38,7 @@ public class Troop {
 		speed = 5;
 		image = Assets.menu;
 		rectangle = new Rect(posX-margin,posY-margin,posX+image.getWidth()+margin,posY+image.getHeight()+margin);
+		alive=false;
 		
 	}
 	public void addDestination(int posX,int posY)
